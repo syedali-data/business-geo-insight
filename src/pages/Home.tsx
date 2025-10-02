@@ -95,8 +95,10 @@ export default function Home() {
                 AI-Powered Local Market Research
               </Badge>
               <h1 className="font-heading text-4xl md:text-6xl font-bold mb-6 text-balance">
-                Find Your Next Customer in
-                <span className="gradient-primary bg-clip-text text-transparent"> Any City</span>
+                Find Your Next Customer in{" "}
+                <span className="bg-gradient-to-r from-cyan-400 to-sky-500 bg-clip-text text-transparent">
+                  Any City
+                </span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground mb-8 text-balance max-w-2xl mx-auto">
                 Generate validated leads for any profession in minutes. Get emails, ratings, insights, 
