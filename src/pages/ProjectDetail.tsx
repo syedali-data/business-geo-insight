@@ -4,37 +4,78 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
-import { Sparkles, Play, ArrowLeft } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Sparkles, Play, ArrowLeft, Save, Trash2 } from 'lucide-react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from '@/hooks/use-toast';
 import { runMarketResearch, runNewsletter } from '@/lib/api';
 import { useState } from 'react';
+import { useProjects } from '@/store/projects';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function ProjectDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const project = useProjects((s) => s.getProject(id!));
+  const updateProject = useProjects((s) => s.updateProject);
+  const deleteProject = useProjects((s) => s.deleteProject);
+  
   const [templateId, setTemplateId] = useState('default');
   const [tone, setTone] = useState<'professional' | 'friendly'>('professional');
   const [length, setLength] = useState<'short' | 'standard' | 'long'>('standard');
   const [sendNow, setSendNow] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  
+  // Settings form state
+  const [editForm, setEditForm] = useState<Partial<typeof project>>(project || {});
 
-  // Mock data
-  const project = {
-    id,
-    title: 'London Roofing Contractors',
-    location: 'London, ON, Canada',
-    country: 'CA',
-    region: 'ON',
-    city: 'London',
-    profession: 'Roofing',
-    professionCode: 'roofing',
-    professionLabel: 'Roofing',
-    radiusKm: 25,
-    keywords: ['residential', 'commercial']
-  };
+  if (!project) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="p-6 max-w-md text-center">
+          <h2 className="text-xl font-semibold mb-2">Project not found</h2>
+          <p className="text-muted-foreground mb-4">The project you're looking for doesn't exist.</p>
+          <Link to="/projects">
+            <Button>Back to Projects</Button>
+          </Link>
+        </Card>
+      </div>
+    );
+  }
+
+  function updateEditForm(key: string, value: any) {
+    setEditForm((f: any) => ({ ...f, [key]: value }));
+  }
+
+  function handleSaveSettings() {
+    updateProject(project.id, editForm);
+    toast({
+      title: "Settings Saved",
+      description: "Project settings have been updated.",
+    });
+  }
+
+  function handleDeleteProject() {
+    deleteProject(project.id);
+    toast({
+      title: "Project Deleted",
+      description: `${project.title} has been deleted.`,
+    });
+    navigate('/projects');
+  }
 
   // Market research mutation
   const runMutation = useMutation({
@@ -145,8 +186,10 @@ export default function ProjectDetail() {
             <div>
               <h1 className="font-heading text-3xl font-bold mb-2">{project.title}</h1>
               <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary">{project.location}</Badge>
-                <Badge variant="outline">{project.profession}</Badge>
+                <Badge variant="secondary">
+                  {project.city}, {project.region ? `${project.region}, ` : ''}{project.country}
+                </Badge>
+                <Badge variant="outline">{project.professionLabel}</Badge>
                 <Badge variant="outline">{project.radiusKm}km radius</Badge>
               </div>
             </div>
@@ -167,11 +210,13 @@ export default function ProjectDetail() {
                     <div className="grid md:grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Location:</span>
-                        <p className="font-medium">{project.location}</p>
+                        <p className="font-medium">
+                          {project.city}, {project.region ? `${project.region}, ` : ''}{project.country}
+                        </p>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Profession:</span>
-                        <p className="font-medium">{project.profession}</p>
+                        <p className="font-medium">{project.professionLabel}</p>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Radius:</span>
@@ -291,11 +336,157 @@ export default function ProjectDetail() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="settings">
-                <Card className="p-6 space-y-4">
-                  <h3 className="text-lg font-semibold">Project Settings</h3>
-                  <Button variant="destructive">Delete Project</Button>
+              <TabsContent value="settings" className="space-y-4">
+                <Card className="p-6 space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Project Settings</h3>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="sm:col-span-2">
+                        <Label htmlFor="edit-title">Project Title</Label>
+                        <Input
+                          id="edit-title"
+                          value={editForm.title || ''}
+                          onChange={(e) => updateEditForm('title', e.target.value)}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="edit-country">Country (ISO2)</Label>
+                        <Input
+                          id="edit-country"
+                          value={editForm.country || ''}
+                          onChange={(e) => updateEditForm('country', e.target.value.toUpperCase())}
+                          maxLength={2}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="edit-region">Region/State</Label>
+                        <Input
+                          id="edit-region"
+                          value={editForm.region || ''}
+                          onChange={(e) => updateEditForm('region', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="edit-city">City</Label>
+                        <Input
+                          id="edit-city"
+                          value={editForm.city || ''}
+                          onChange={(e) => updateEditForm('city', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="edit-radius">Radius (km)</Label>
+                        <Input
+                          id="edit-radius"
+                          type="number"
+                          value={editForm.radiusKm || 25}
+                          onChange={(e) => updateEditForm('radiusKm', Number(e.target.value))}
+                          min={1}
+                          max={200}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="edit-profession">Profession Code</Label>
+                        <Input
+                          id="edit-profession"
+                          value={editForm.professionCode || ''}
+                          onChange={(e) => updateEditForm('professionCode', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="edit-profession-label">Profession Label</Label>
+                        <Input
+                          id="edit-profession-label"
+                          value={editForm.professionLabel || ''}
+                          onChange={(e) => updateEditForm('professionLabel', e.target.value)}
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <Label htmlFor="edit-keywords">Keywords (comma-separated)</Label>
+                        <Input
+                          id="edit-keywords"
+                          value={editForm.keywords?.join(', ') || ''}
+                          onChange={(e) =>
+                            updateEditForm(
+                              'keywords',
+                              e.target.value.split(',').map((s) => s.trim()).filter(Boolean)
+                            )
+                          }
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2 pt-2 border-t">
+                        <h4 className="font-medium text-sm mb-3">Google Sheets</h4>
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <div className="sm:col-span-2">
+                            <Label htmlFor="edit-sheet-id">Sheet ID</Label>
+                            <Input
+                              id="edit-sheet-id"
+                              value={editForm.sheetId || ''}
+                              onChange={(e) => updateEditForm('sheetId', e.target.value)}
+                              placeholder="1ABcDEF..."
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="edit-leads-range">Leads Range</Label>
+                            <Input
+                              id="edit-leads-range"
+                              value={editForm.leadsRange || 'Leads!A1:Z'}
+                              onChange={(e) => updateEditForm('leadsRange', e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="edit-insights-range">Insights Range</Label>
+                            <Input
+                              id="edit-insights-range"
+                              value={editForm.insightsRange || 'Insights!A1:Z'}
+                              onChange={(e) => updateEditForm('insightsRange', e.target.value)}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-6">
+                    <Button onClick={handleSaveSettings} className="w-full sm:w-auto">
+                      <Save className="mr-2 h-4 w-4" />
+                      Save Changes
+                    </Button>
+                  </div>
                 </Card>
+
+                <Card className="p-6">
+                  <h3 className="text-lg font-semibold mb-2 text-destructive">Danger Zone</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Permanently delete this project and all associated data.
+                  </p>
+                  <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)}>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Project
+                  </Button>
+                </Card>
+
+                <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete <strong>{project.title}</strong> and all associated data.
+                        This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteProject} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        Delete Project
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </TabsContent>
             </Tabs>
           </div>

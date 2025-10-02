@@ -10,6 +10,10 @@ export type Project = {
   professionCode: string;
   professionLabel: string;
   keywords: string[];
+  // Google Sheets wiring (optional for each project)
+  sheetId?: string;            // 1ABc... spreadsheet ID
+  leadsRange?: string;         // default "Leads!A1:Z"
+  insightsRange?: string;      // default "Insights!A1:Z"
   publicId?: string;
   createdAt: string;
   updatedAt?: string;
