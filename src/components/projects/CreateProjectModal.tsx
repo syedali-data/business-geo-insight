@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 import { useProjects } from "@/store/projects";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
@@ -144,42 +144,29 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
 
             <div>
               <Label htmlFor="profession">Profession</Label>
-              <Select
-                value={form.professionCode}
-                onValueChange={(v) => {
-                  update("professionCode", v);
-                  // Auto-update label when code changes
-                  const labels: Record<string, string> = {
-                    roofing: "Roofing",
-                    hvac: "HVAC",
-                    plumbing: "Plumbing",
-                    dentist: "Dentist",
-                    electrician: "Electrician",
-                    landscaping: "Landscaping",
-                    restaurant: "Restaurant",
-                  };
-                  update("professionLabel", labels[v] || v);
-                }}
-              >
-                <SelectTrigger id="profession">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="roofing">Roofing</SelectItem>
-                  <SelectItem value="hvac">HVAC</SelectItem>
-                  <SelectItem value="plumbing">Plumbing</SelectItem>
-                  <SelectItem value="dentist">Dentist</SelectItem>
-                  <SelectItem value="electrician">Electrician</SelectItem>
-                  <SelectItem value="landscaping">Landscaping</SelectItem>
-                  <SelectItem value="restaurant">Restaurant</SelectItem>
-                </SelectContent>
-              </Select>
               <Input
-                className="mt-2"
-                value={form.professionLabel}
-                onChange={(e) => update("professionLabel", e.target.value)}
-                placeholder="Roofing"
+                id="profession"
+                value={form.professionLabel || ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  update("professionLabel", value);
+                  update("professionCode", value.toLowerCase().replace(/\s+/g, "-"));
+                }}
+                placeholder="e.g., Roofing, HVAC, Dentist, Plumber"
+                list="profession-suggestions"
               />
+              <datalist id="profession-suggestions">
+                <option value="Roofing" />
+                <option value="HVAC" />
+                <option value="Plumbing" />
+                <option value="Dentist" />
+                <option value="Electrician" />
+                <option value="Landscaping" />
+                <option value="Restaurant" />
+                <option value="Real Estate Agent" />
+                <option value="Lawyer" />
+                <option value="Accountant" />
+              </datalist>
             </div>
             <div>
               <Label htmlFor="keywords">Keywords (comma-separated)</Label>
