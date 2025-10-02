@@ -14,10 +14,11 @@ import {
   Calendar
 } from 'lucide-react';
 import { formatNumber, formatRelativeTime } from '@/lib/format';
-import { useUIStore } from '@/lib/store';
+import { useState } from 'react';
+import CreateProjectModal from '@/components/projects/CreateProjectModal';
 
 export default function Dashboard() {
-  const setNewProjectDialogOpen = useUIStore((state) => state.setNewProjectDialogOpen);
+  const [createProjectOpen, setCreateProjectOpen] = useState(false);
   
   // Mock data
   const usage = {
@@ -65,8 +66,8 @@ export default function Dashboard() {
               <Link to="/projects">
                 <Button variant="ghost" size="sm">Projects</Button>
               </Link>
-              <Link to="/billing">
-                <Button variant="ghost" size="sm">Billing</Button>
+              <Link to="/newsletter">
+                <Button variant="ghost" size="sm">Newsletter</Button>
               </Link>
               <Link to="/settings">
                 <Button variant="ghost" size="sm">Settings</Button>
@@ -84,7 +85,7 @@ export default function Dashboard() {
                 Welcome back! Here's your research overview.
               </p>
             </div>
-            <Button onClick={() => setNewProjectDialogOpen(true)} className="shadow-elegant">
+            <Button onClick={() => setCreateProjectOpen(true)} className="shadow-elegant">
               <Plus className="h-4 w-4 mr-2" />
               New Project
             </Button>
@@ -159,7 +160,7 @@ export default function Dashboard() {
                 <p className="text-muted-foreground mb-4">
                   Generate fresh leads for any city and profession
                 </p>
-                <Button onClick={() => setNewProjectDialogOpen(true)}>
+                <Button onClick={() => setCreateProjectOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Create Project
                 </Button>
@@ -175,9 +176,9 @@ export default function Dashboard() {
                 <p className="text-muted-foreground mb-4">
                   Create AI-powered newsletters from your research
                 </p>
-                <Link to="/projects">
+                <Link to="/newsletter">
                   <Button variant="outline">
-                    View Projects
+                    Open Newsletter Hub
                   </Button>
                 </Link>
               </CardContent>
@@ -196,7 +197,7 @@ export default function Dashboard() {
                   <p className="text-muted-foreground mb-4">
                     No research runs yet. Start your first project!
                   </p>
-                  <Button onClick={() => setNewProjectDialogOpen(true)}>
+                  <Button onClick={() => setCreateProjectOpen(true)}>
                     <Plus className="h-4 w-4 mr-2" />
                     New Project
                   </Button>
@@ -239,6 +240,8 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+
+        <CreateProjectModal open={createProjectOpen} onOpenChange={setCreateProjectOpen} />
       </div>
     </>
   );

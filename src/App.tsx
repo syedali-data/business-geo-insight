@@ -12,6 +12,8 @@ import PublicReport from "./pages/PublicReport";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
+import NewsletterHub from "./pages/NewsletterHub";
+import NewsletterComposer from "./pages/NewsletterComposer";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +37,8 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:id" element={<ProjectDetail />} />
+            <Route path="/newsletter" element={<NewsletterHub />} />
+            <Route path="/newsletter/:id" element={<NewsletterComposer />} />
             <Route path="/settings" element={<Settings />} />
             
             {/* 404 fallback */}

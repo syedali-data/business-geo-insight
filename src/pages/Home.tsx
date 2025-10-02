@@ -105,17 +105,17 @@ export default function Home() {
                 and market intelligence—all from one research run.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link to="/dashboard">
+                <Link to="/projects?new=1">
                   <Button size="lg" className="shadow-elegant">
                     Start Free Research
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
-                <Button size="lg" variant="outline" onClick={() => {
-                  document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' });
-                }}>
-                  See Demo
-                </Button>
+                <Link to="/r/demo">
+                  <Button size="lg" variant="outline">
+                    See Demo
+                  </Button>
+                </Link>
               </div>
               
               {/* Trust badges */}
@@ -176,10 +176,12 @@ export default function Home() {
                 <p className="text-muted-foreground mb-6">
                   Example: London, Ontario roofing contractors
                 </p>
-                <Button size="lg" className="shadow-glow">
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Generate Sample Report
-                </Button>
+                <Link to="/r/demo">
+                  <Button size="lg" className="shadow-glow">
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Generate Sample Report
+                  </Button>
+                </Link>
                 <p className="text-sm text-muted-foreground mt-4">
                   Results in ~30 seconds • No account required
                 </p>

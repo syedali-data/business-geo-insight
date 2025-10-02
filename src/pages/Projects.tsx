@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,8 +12,17 @@ import { useProjects } from '@/store/projects';
 
 export default function Projects() {
   const { projects } = useProjects();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Auto-open modal if ?new=1 is in URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('new') === '1') {
+      setOpen(true);
+    }
+  }, [location.search]);
 
   return (
     <>
@@ -31,6 +41,9 @@ export default function Projects() {
             <nav className="hidden md:flex items-center gap-6">
               <Link to="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
                 Dashboard
+              </Link>
+              <Link to="/newsletter" className="text-sm font-medium hover:text-primary transition-colors">
+                Newsletter
               </Link>
               <Link to="/settings" className="text-sm font-medium hover:text-primary transition-colors">
                 Settings
