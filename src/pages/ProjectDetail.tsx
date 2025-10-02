@@ -13,8 +13,13 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from '@/hooks/use-toast';
 import { runMarketResearch, runNewsletter } from '@/lib/api';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useProjects } from '@/store/projects';
+import { fetchProjectLeads } from '@/lib/leads';
+import { computeInsights, Insights } from '@/lib/insights';
+import { InsightsTab } from '@/components/projects/InsightsTab';
+import { ResultsTab } from '@/components/projects/ResultsTab';
+import { Lead } from '@/types';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,6 +46,40 @@ export default function ProjectDetail() {
   
   // Settings form state - initialize with empty object if no project
   const [editForm, setEditForm] = useState<any>(project || {});
+
+  // Insights state
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [insights, setInsights] = useState<Insights | null>(null);
+  const [loadingInsights, setLoadingInsights] = useState(false);
+
+  // Load leads and compute insights
+  useEffect(() => {
+    if (!project) return;
+
+    async function loadInsights() {
+      setLoadingInsights(true);
+      try {
+        const fetchedLeads = await fetchProjectLeads(project.id!, {
+          sheetId: project.sheetId,
+          range: project.leadsRange || 'Leads!A1:Z',
+        });
+        setLeads(fetchedLeads);
+        const computed = computeInsights(fetchedLeads, project.radiusKm);
+        setInsights(computed);
+      } catch (error) {
+        console.error('Failed to load insights:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to load insights',
+        });
+      } finally {
+        setLoadingInsights(false);
+      }
+    }
+
+    loadInsights();
+  }, [project]);
 
   function updateEditForm(key: string, value: any) {
     setEditForm((f: any) => ({ ...f, [key]: value }));
@@ -255,18 +294,56 @@ export default function ProjectDetail() {
               </TabsContent>
 
               <TabsContent value="results">
-                <Card className="p-6">
-                  <p className="text-muted-foreground">No results yet. Run your first research to see leads.</p>
-                </Card>
+                {leads.length > 0 ? (
+                  <ResultsTab leads={leads} />
+                ) : (
+                  <Card className="p-6">
+                    <h3 className="text-lg font-semibold mb-2">No Results Yet</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Run your first research to see leads.
+                    </p>
+                    <Link to={`/projects/${project.id}?tab=run`}>
+                      <Button>
+                        <Play className="mr-2 h-4 w-4" />
+                        Run Research
+                      </Button>
+                    </Link>
+                  </Card>
+                )}
               </TabsContent>
 
               <TabsContent value="insights">
-                <Card className="p-6">
-                  <p className="text-muted-foreground">Insights will appear after running research.</p>
-                </Card>
+                {loadingInsights ? (
+                  <Card className="p-6">
+                    <p className="text-muted-foreground">Loading insights...</p>
+                  </Card>
+                ) : insights && leads.length > 0 ? (
+                  <InsightsTab insights={insights} />
+                ) : (
+                  <Card className="p-6">
+                    <h3 className="text-lg font-semibold mb-2">No Data Yet</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Run your first research to generate market insights.
+                    </p>
+                    <Link to={`/projects/${project.id}?tab=run`}>
+                      <Button>
+                        <Play className="mr-2 h-4 w-4" />
+                        Run Research
+                      </Button>
+                    </Link>
+                  </Card>
+                )}
               </TabsContent>
 
               <TabsContent value="newsletter" className="space-y-4">
+                {leads.length > 0 && (
+                  <Card className="p-4 bg-primary/5 border-primary/20">
+                    <p className="text-sm text-muted-foreground">
+                      💡 This newsletter will use insights from your last research run ({leads.length} businesses analyzed)
+                    </p>
+                  </Card>
+                )}
+                
                 <Card className="p-6 space-y-6">
                   <div>
                     <h3 className="text-lg font-semibold mb-4">Newsletter Settings</h3>
