@@ -71,3 +71,61 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## API Testing
+
+This app uses Lovable Cloud Functions to proxy requests to n8n webhooks. To test the endpoints:
+
+### Test Market Research Endpoint
+
+```bash
+curl -X POST https://<your-project-id>.supabase.co/functions/v1/runMarketResearch \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <your-anon-key>" \
+  -d '{
+    "projectId": "demo",
+    "country": "CA",
+    "region": "ON",
+    "city": "London",
+    "radius_km": 25,
+    "profession_code": "roofing",
+    "profession_label": "Roofing",
+    "keywords": ["residential", "commercial"],
+    "max_leads": 200,
+    "enrich": true,
+    "validate_emails": true
+  }'
+```
+
+### Test Newsletter Endpoint
+
+```bash
+curl -X POST https://<your-project-id>.supabase.co/functions/v1/runNewsletter \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <your-anon-key>" \
+  -d '{
+    "projectId": "demo",
+    "templateId": "default",
+    "tone": "professional",
+    "length": "standard",
+    "sendNow": false
+  }'
+```
+
+**Required Environment Variables:**
+
+Make sure these secrets are configured in your Supabase project:
+
+- `INTERNAL_N8N_API_KEY` - Your internal API key for n8n webhook authentication
+- `N8N_LEADGEN_WEBHOOK_URL` - Your n8n leadgen webhook URL (e.g., `https://your-n8n.com/webhook/lovable/leadgen`)
+- `N8N_NEWSLETTER_WEBHOOK_URL` - Your n8n newsletter webhook URL (e.g., `https://your-n8n.com/webhook/lovable/newsletter`)
+
+Expected responses will include `{ status, runId }` from n8n or appropriate error messages if environment variables are missing.
+
+## SPA Fallback for Production Deployments
+
+When deploying to external hosting platforms, ensure SPA fallback is configured:
+
+- **Netlify**: Add to `_redirects`: `/* /index.html 200`
+- **Vercel**: Add to `vercel.json`: `{ "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }`
+- **Other hosts**: Configure all routes to serve `index.html`
