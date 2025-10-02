@@ -39,9 +39,33 @@ export default function ProjectDetail() {
   const [sendNow, setSendNow] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   
-  // Settings form state
-  const [editForm, setEditForm] = useState<Partial<typeof project>>(project || {});
+  // Settings form state - initialize with empty object if no project
+  const [editForm, setEditForm] = useState<any>(project || {});
 
+  function updateEditForm(key: string, value: any) {
+    setEditForm((f: any) => ({ ...f, [key]: value }));
+  }
+
+  function handleSaveSettings() {
+    if (!project) return;
+    updateProject(project.id, editForm);
+    toast({
+      title: "Settings Saved",
+      description: "Project settings have been updated.",
+    });
+  }
+
+  function handleDeleteProject() {
+    if (!project) return;
+    deleteProject(project.id);
+    toast({
+      title: "Project Deleted",
+      description: `${project.title} has been deleted.`,
+    });
+    navigate('/projects');
+  }
+
+  // Render not found state
   if (!project) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -54,27 +78,6 @@ export default function ProjectDetail() {
         </Card>
       </div>
     );
-  }
-
-  function updateEditForm(key: string, value: any) {
-    setEditForm((f: any) => ({ ...f, [key]: value }));
-  }
-
-  function handleSaveSettings() {
-    updateProject(project.id, editForm);
-    toast({
-      title: "Settings Saved",
-      description: "Project settings have been updated.",
-    });
-  }
-
-  function handleDeleteProject() {
-    deleteProject(project.id);
-    toast({
-      title: "Project Deleted",
-      description: `${project.title} has been deleted.`,
-    });
-    navigate('/projects');
   }
 
   // Market research mutation
