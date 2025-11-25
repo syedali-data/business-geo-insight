@@ -277,6 +277,31 @@ export default function ProjectDetail() {
                   </div>
 
                   <div className="border-t pt-6">
+                    {/* Dynamic estimates based on max_leads */}
+                    {(() => {
+                      const maxLeads = project.maxLeads || 100;
+                      const minTime = Math.max(1, Math.round(maxLeads / 50));
+                      const maxTime = Math.round(maxLeads / 40) + 1;
+                      const credits = maxLeads <= 100 ? 1 : maxLeads <= 150 ? 2 : 3;
+                      return (
+                        <div className="mb-4 p-3 rounded-lg bg-muted/50 border">
+                          <div className="flex flex-wrap gap-4 text-sm">
+                            <div className="flex items-center gap-2">
+                              <span className="text-muted-foreground">Est. Time:</span>
+                              <span className="font-medium">{minTime}-{maxTime} min</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-muted-foreground">Credits:</span>
+                              <span className="font-medium">{credits} credit{credits > 1 ? 's' : ''}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-muted-foreground">Target:</span>
+                              <span className="font-medium">{maxLeads} leads</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
                     <Button 
                       size="lg" 
                       className="w-full md:w-auto shadow-elegant"
@@ -286,9 +311,6 @@ export default function ProjectDetail() {
                       <Play className="mr-2 h-4 w-4" />
                       {runMutation.isPending ? 'Starting...' : 'Run Research'}
                     </Button>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Est. 2-3 minutes • 1 credit
-                    </p>
                   </div>
                 </Card>
 
