@@ -155,6 +155,16 @@
     --sidebar-border: 220 40% 14%;
     --sidebar-ring: 210 100% 56%;
     
+    /* Chart Colors - Premium dark mode palette */
+    --chart-blue: 210 100% 60%;
+    --chart-green: 152 69% 55%;
+    --chart-amber: 38 92% 60%;
+    --chart-red: 0 84% 65%;
+    --chart-purple: 258 90% 70%;
+    --chart-pink: 330 81% 65%;
+    --chart-teal: 173 80% 50%;
+    --chart-orange: 25 95% 58%;
+    
     /* Dark mode gradients - Premium feel */
     --gradient-primary: linear-gradient(135deg, hsl(210 100% 56%), hsl(210 100% 40%));
     --gradient-hero: linear-gradient(180deg, hsl(222 47% 7%) 0%, hsl(220 45% 11%) 100%);
