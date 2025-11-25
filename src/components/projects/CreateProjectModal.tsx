@@ -9,6 +9,8 @@ import { useProjects } from "@/store/projects";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useCredits } from "@/hooks/useCredits";
+import { AlertCircle } from "lucide-react";
 
 const schema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -27,6 +29,7 @@ const schema = z.object({
 
 const BASE_LEADS = 100;
 const CREDITS_PER_LEAD = 1;
+const BASE_PROJECT_COST = 1; // Base cost to create a project
 
 interface CreateProjectModalProps {
   open: boolean;
@@ -36,6 +39,7 @@ interface CreateProjectModalProps {
 export default function CreateProjectModal({ open, onOpenChange }: CreateProjectModalProps) {
   const nav = useNavigate();
   const addProject = useProjects((s) => s.addProject);
+  const { credits, isLoading: creditsLoading } = useCredits();
   const [pending, setPending] = useState(false);
   const [form, setForm] = useState<any>({
     country: "CA",
@@ -51,6 +55,10 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
     const leads = form.maxLeads || BASE_LEADS;
     return Math.max(0, (leads - BASE_LEADS) * CREDITS_PER_LEAD);
   }, [form.maxLeads]);
+
+  const totalCreditsNeeded = BASE_PROJECT_COST + extraCredits;
+  const hasEnoughCredits = credits.creditsRemaining >= totalCreditsNeeded;
+  const creditsShortfall = totalCreditsNeeded - credits.creditsRemaining;
 
   function update(k: string, v: any) {
     setForm((f: any) => ({ ...f, [k]: v }));
@@ -217,6 +225,19 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
                     <span className="text-sm font-semibold text-primary">+{extraCredits} credits</span>
                   </div>
                 )}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border">
+                  <span className="text-sm text-muted-foreground">Total credits needed:</span>
+                  <span className="text-sm font-semibold">{totalCreditsNeeded} credits</span>
+                </div>
+                {!creditsLoading && !hasEnoughCredits && (
+                  <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive">
+                    <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                    <div className="text-sm">
+                      <p className="font-medium">Insufficient credits</p>
+                      <p className="text-destructive/80">You need {creditsShortfall} more credit{creditsShortfall > 1 ? 's' : ''} to create this project. Current balance: {credits.creditsRemaining}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -257,8 +278,8 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={create} disabled={pending}>
-            {pending ? "Creating..." : "Create Project"}
+          <Button onClick={create} disabled={pending || creditsLoading || !hasEnoughCredits}>
+            {pending ? "Creating..." : `Create Project (${totalCreditsNeeded} credit${totalCreditsNeeded > 1 ? 's' : ''})`}
           </Button>
         </div>
       </DialogContent>
