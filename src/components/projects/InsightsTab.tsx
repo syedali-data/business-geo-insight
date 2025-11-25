@@ -244,7 +244,7 @@ export function InsightsTab({ insights }: InsightsTabProps) {
                 className="h-[320px]"
               >
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={ratingBuckets} margin={{ left: 10, right: 10, top: 5, bottom: 5 }}>
+                  <BarChart data={ratingBuckets} margin={{ left: 40, right: 40, top: 20, bottom: 20 }}>
                     <XAxis 
                       dataKey="bucket" 
                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
