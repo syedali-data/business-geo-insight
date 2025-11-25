@@ -85,11 +85,11 @@ export default function Home() {
   const pricingTiers = [
     {
       name: 'Starter',
-      price: 49,
+      price: 29,
       description: 'Perfect for testing the waters',
       features: [
-        '100 credits/month',
-        'Up to 500 leads per run',
+        '5 Basic runs/month',
+        'Up to 100 leads per run',
         'Email validation',
         'Basic insights & charts',
         'CSV export',
@@ -100,13 +100,13 @@ export default function Home() {
     },
     {
       name: 'Pro',
-      price: 149,
+      price: 79,
       description: 'Best for growing agencies',
       features: [
-        '400 credits/month',
-        'Unlimited leads per run',
+        '15 Premium runs/month',
+        'Up to 500 leads per run',
         'Email & phone validation',
-        'Advanced insights',
+        'AI Newsletter included',
         'CSV & PDF export',
         'Priority support',
       ],
@@ -115,16 +115,16 @@ export default function Home() {
     },
     {
       name: 'Business',
-      price: 399,
+      price: 199,
       description: 'For high-volume users',
       features: [
-        '1200 credits/month',
-        'Unlimited leads per run',
+        '50 Premium runs/month',
+        'Up to 500 leads per run',
         'Full validation suite',
-        'Custom integrations',
+        'AI Newsletter included',
         'White-label reports',
         'Dedicated account manager',
-        'API access',
+        '30% off extra runs',
       ],
       cta: 'Get Started',
       popular: false,
@@ -227,7 +227,7 @@ export default function Home() {
                     <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center">
                       <Check className="h-3 w-3 text-primary" />
                     </div>
-                    20 free credits
+                    First run free
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center">
