@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { z } from "zod";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
+import { Slider } from "@/components/ui/slider";
 import { useProjects } from "@/store/projects";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
@@ -19,10 +19,14 @@ const schema = z.object({
   professionCode: z.string().min(2, "Profession code required"),
   professionLabel: z.string().min(2, "Profession label required"),
   keywords: z.string().optional(),
+  maxLeads: z.coerce.number().min(100, "Minimum 100 leads").max(1000, "Maximum 1000 leads").default(100),
   sheetId: z.string().optional(),
   leadsRange: z.string().optional(),
   insightsRange: z.string().optional(),
 });
+
+const BASE_LEADS = 100;
+const CREDITS_PER_LEAD = 1;
 
 interface CreateProjectModalProps {
   open: boolean;
@@ -38,9 +42,15 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
     radiusKm: 25,
     professionCode: "roofing",
     professionLabel: "Roofing",
+    maxLeads: 100,
     leadsRange: "Leads!A1:Z",
     insightsRange: "Insights!A1:Z",
   });
+
+  const extraCredits = useMemo(() => {
+    const leads = form.maxLeads || BASE_LEADS;
+    return Math.max(0, (leads - BASE_LEADS) * CREDITS_PER_LEAD);
+  }, [form.maxLeads]);
 
   function update(k: string, v: any) {
     setForm((f: any) => ({ ...f, [k]: v }));
@@ -70,6 +80,7 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
       professionCode: parsed.data.professionCode,
       professionLabel: parsed.data.professionLabel,
       keywords,
+      maxLeads: parsed.data.maxLeads,
       sheetId: parsed.data.sheetId,
       leadsRange: parsed.data.leadsRange,
       insightsRange: parsed.data.insightsRange,
@@ -176,6 +187,37 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
                 onChange={(e) => update("keywords", e.target.value)}
                 placeholder="residential, commercial"
               />
+            </div>
+
+            <div className="sm:col-span-2 pt-2 border-t">
+              <h3 className="font-medium text-sm mb-3">Lead Generation</h3>
+              <div className="space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label htmlFor="maxLeads">Number of Leads</Label>
+                    <span className="text-sm font-medium text-primary">{form.maxLeads || 100} leads</span>
+                  </div>
+                  <Slider
+                    id="maxLeads"
+                    value={[form.maxLeads || 100]}
+                    onValueChange={([value]) => update("maxLeads", value)}
+                    min={100}
+                    max={1000}
+                    step={50}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                    <span>100 (included)</span>
+                    <span>1000</span>
+                  </div>
+                </div>
+                {extraCredits > 0 && (
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-accent/50 border border-accent">
+                    <span className="text-sm text-muted-foreground">Extra credits for additional leads:</span>
+                    <span className="text-sm font-semibold text-primary">+{extraCredits} credits</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="sm:col-span-2 pt-2 border-t">
