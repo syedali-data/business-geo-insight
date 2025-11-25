@@ -10,6 +10,7 @@ export type Project = {
   professionCode: string;
   professionLabel: string;
   keywords: string[];
+  maxLeads?: number;           // default 100, range 50-200
   // Google Sheets wiring (optional for each project)
   sheetId?: string;            // 1ABc... spreadsheet ID
   leadsRange?: string;         // default "Leads!A1:Z"

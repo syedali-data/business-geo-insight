@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
@@ -172,7 +173,7 @@ export default function ProjectDetail() {
       profession_code: project.professionCode,
       profession_label: project.professionLabel,
       keywords: project.keywords,
-      max_leads: 200,
+      max_leads: project.maxLeads || 100,
       enrich: true,
       validate_emails: true,
     });
@@ -267,6 +268,10 @@ export default function ProjectDetail() {
                       <div>
                         <span className="text-muted-foreground">Keywords:</span>
                         <p className="font-medium">{project.keywords.join(', ')}</p>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Max Leads:</span>
+                        <p className="font-medium">{project.maxLeads || 100}</p>
                       </div>
                     </div>
                   </div>
@@ -466,6 +471,24 @@ export default function ProjectDetail() {
                           min={1}
                           max={200}
                         />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <Label htmlFor="edit-max-leads">
+                          Max Leads per Run: <span className="font-semibold text-primary">{editForm.maxLeads || 100}</span>
+                        </Label>
+                        <Slider
+                          id="edit-max-leads"
+                          value={[editForm.maxLeads || 100]}
+                          onValueChange={([v]) => updateEditForm('maxLeads', v)}
+                          min={50}
+                          max={200}
+                          step={10}
+                          className="mt-2"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Controls how many leads to collect per research run (50-200)
+                        </p>
                       </div>
 
                       <div>
