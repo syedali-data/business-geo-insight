@@ -66,6 +66,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        success: {
+          DEFAULT: "hsl(var(--accent-success))",
+          foreground: "hsl(0 0% 100%)",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--accent-warning))",
+          foreground: "hsl(0 0% 100%)",
+        },
         chart: {
           blue: "hsl(var(--chart-blue))",
           green: "hsl(var(--chart-green))",

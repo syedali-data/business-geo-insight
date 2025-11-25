@@ -10,7 +10,7 @@ import {
   Calendar,
   Plus,
   ArrowRight,
-  Sparkles
+  Zap
 } from 'lucide-react';
 import { useState } from 'react';
 import CreateProjectModal from '@/components/projects/CreateProjectModal';
@@ -19,20 +19,17 @@ import ActionCard from '@/components/dashboard/ActionCard';
 import ResearchRunItem from '@/components/dashboard/ResearchRunItem';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import EmptyState from '@/components/dashboard/EmptyState';
-import CreditsUsageWidget from '@/components/dashboard/CreditsUsageWidget';
-import { useCredits } from '@/hooks/useCredits';
+import { RunsWidget } from '@/components/dashboard/RunsWidget';
+import { useSubscription } from '@/hooks/useSubscription';
 import AppShell from '@/components/layout/AppShell';
 
 export default function Dashboard() {
   const [createProjectOpen, setCreateProjectOpen] = useState(false);
-  const { credits, usageHistory, isLoading: creditsLoading } = useCredits();
-  
-  // Compute stats from credits data
-  const creditsUsed = credits.creditsTotal - credits.creditsRemaining;
+  const { runsRemaining, runsTotal, isLoading: subscriptionLoading } = useSubscription();
   
   // Mock additional data (would come from runs table in production)
   const usage = {
-    runCount: usageHistory.filter(u => u.credits > 0).length,
+    runCount: 4,
     leadCount: 247,
     emailCount: 189,
   };
@@ -75,14 +72,14 @@ export default function Dashboard() {
           {/* KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
             <KPICard
-              title="Credits Remaining"
-              value={credits.creditsRemaining}
-              suffix={`/ ${credits.creditsTotal}`}
-              subtitle={`${Math.round((credits.creditsRemaining / credits.creditsTotal) * 100)}% remaining`}
-              icon={Sparkles}
+              title="Runs Remaining"
+              value={runsRemaining}
+              suffix={`/ ${runsTotal}`}
+              subtitle={`${runsTotal > 0 ? Math.round((runsRemaining / runsTotal) * 100) : 0}% remaining`}
+              icon={Zap}
               iconColor="cyan"
               delay={0.1}
-              progress={{ value: credits.creditsRemaining, max: credits.creditsTotal }}
+              progress={{ value: runsRemaining, max: runsTotal }}
             />
             <KPICard
               title="Total Leads"
@@ -112,14 +109,9 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Credits Usage Widget + Action Cards */}
+          {/* Runs Widget + Action Cards */}
           <div className="grid lg:grid-cols-3 gap-6 mb-10">
-            <CreditsUsageWidget
-              creditsRemaining={credits.creditsRemaining}
-              creditsTotal={credits.creditsTotal}
-              usageHistory={usageHistory}
-              delay={0.5}
-            />
+            <RunsWidget />
             <div className="lg:col-span-2 grid md:grid-cols-2 gap-6">
               <ActionCard
                 title="Start New Research"
