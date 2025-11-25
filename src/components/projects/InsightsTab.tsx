@@ -244,7 +244,7 @@ export function InsightsTab({ insights }: InsightsTabProps) {
                 className="h-[320px]"
               >
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={ratingBuckets}>
+                  <BarChart data={ratingBuckets} margin={{ left: 10, right: 10, top: 5, bottom: 5 }}>
                     <XAxis 
                       dataKey="bucket" 
                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
@@ -355,7 +355,7 @@ export function InsightsTab({ insights }: InsightsTabProps) {
                 className="h-[320px]"
               >
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={topRated} layout="vertical" margin={{ left: 20 }}>
+                  <BarChart data={topRated} layout="vertical" margin={{ left: 0, right: 30, top: 5, bottom: 5 }}>
                     <XAxis 
                       type="number" 
                       domain={[0, 5]}
@@ -364,8 +364,9 @@ export function InsightsTab({ insights }: InsightsTabProps) {
                     <YAxis 
                       type="category" 
                       dataKey="name" 
-                      width={140}
+                      width={120}
                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
+                      tickFormatter={(value) => value.length > 20 ? value.substring(0, 20) + '...' : value}
                     />
                     <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: 'hsl(var(--muted))' }} />
                     <Bar 
@@ -398,7 +399,7 @@ export function InsightsTab({ insights }: InsightsTabProps) {
                 className="h-[320px]"
               >
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={reviewLeaders} layout="vertical" margin={{ left: 20 }}>
+                  <BarChart data={reviewLeaders} layout="vertical" margin={{ left: 0, right: 30, top: 5, bottom: 5 }}>
                     <XAxis 
                       type="number"
                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
@@ -406,8 +407,9 @@ export function InsightsTab({ insights }: InsightsTabProps) {
                     <YAxis 
                       type="category" 
                       dataKey="name" 
-                      width={140}
+                      width={120}
                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
+                      tickFormatter={(value) => value.length > 20 ? value.substring(0, 20) + '...' : value}
                     />
                     <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: 'hsl(var(--muted))' }} />
                     <Bar 
