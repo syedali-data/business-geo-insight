@@ -2,290 +2,524 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Insights } from "@/lib/insights";
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from "recharts";
-import { TrendingUp, Users, Mail, Activity, Lightbulb, Target, HelpCircle } from "lucide-react";
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, ResponsiveContainer, Legend } from "recharts";
+import { TrendingUp, Users, Mail, Activity, Lightbulb, Target, HelpCircle, Star, Award } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { motion } from "framer-motion";
+import AnimatedCounter from "@/components/AnimatedCounter";
+import RadialGauge from "@/components/RadialGauge";
 
 interface InsightsTabProps {
   insights: Insights;
 }
 
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.5 }
+  },
+};
+
 export function InsightsTab({ insights }: InsightsTabProps) {
   const { totals, ratingBuckets, categoryShare, topRated, reviewLeaders, emailCoveragePct, saturationIndex, opportunityScore } = insights;
 
-  // Color palette
-  const COLORS = ["hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))"];
+  // Enhanced color palette from design system
+  const RATING_COLORS = {
+    "< 3": "hsl(var(--chart-red))",
+    "3-3.9": "hsl(var(--chart-amber))",
+    "4-4.4": "hsl(var(--chart-blue))",
+    "4.5-5": "hsl(var(--chart-green))",
+  };
+
+  const CATEGORY_COLORS = [
+    "hsl(var(--chart-blue))",
+    "hsl(var(--chart-green))",
+    "hsl(var(--chart-amber))",
+    "hsl(var(--chart-red))",
+    "hsl(var(--chart-purple))",
+    "hsl(var(--chart-pink))",
+    "hsl(var(--chart-teal))",
+    "hsl(var(--chart-orange))",
+  ];
 
   // Saturation level
   const saturationLevel = saturationIndex > 30 ? "High" : saturationIndex > 15 ? "Medium" : "Low";
-  const saturationVariant = saturationIndex > 30 ? "destructive" : saturationIndex > 15 ? "default" : "secondary";
+  const saturationVariant = saturationIndex > 30 ? "destructive" : saturationIndex > 15 ? "warning" : "success";
 
   return (
     <TooltipProvider>
-      <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold mb-2">Market Insights</h2>
-        <p className="text-muted-foreground">
-          Full-market insights generated from your research run—no extra steps.
-        </p>
-      </div>
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="space-y-8 py-6"
+      >
+        {/* Header */}
+        <motion.div variants={itemVariants}>
+          <h2 className="font-heading text-4xl font-bold mb-2 gradient-text">Market Insights</h2>
+          <p className="text-lg text-muted-foreground">
+            AI-powered analytics revealing market opportunities and competitive intelligence
+          </p>
+        </motion.div>
 
-      {/* Insights Chips */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Lightbulb className="h-5 w-5 text-primary" />
-            Key Takeaways
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {insights.insights.map((insight, idx) => (
-            <div key={idx} className="flex items-start gap-2">
-              <div className="h-1.5 w-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
-              <p className="text-sm">{insight}</p>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+        {/* Key Takeaways */}
+        <motion.div variants={itemVariants}>
+          <Card variant="glass" className="border-l-4 border-l-primary shadow-elegant">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Lightbulb className="h-5 w-5 text-primary" />
+                </div>
+                Key Takeaways
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {insights.insights.map((insight, idx) => (
+                <motion.div 
+                  key={idx} 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.1 + 0.3 }}
+                  className="flex items-start gap-3 group"
+                >
+                  <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-primary/20 transition-colors">
+                    <div className="h-2 w-2 rounded-full bg-primary" />
+                  </div>
+                  <p className="text-sm leading-relaxed">{insight}</p>
+                </motion.div>
+              ))}
+            </CardContent>
+          </Card>
+        </motion.div>
 
-      {/* KPI Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Businesses</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totals.businesses}</div>
-            <p className="text-xs text-muted-foreground">Total found in market</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Rating</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {totals.avgRating?.toFixed(1) || "N/A"}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Median: {totals.medianRating?.toFixed(1) || "N/A"}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Email Coverage</CardTitle>
-            <Mail className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{emailCoveragePct}%</div>
-            <p className="text-xs text-muted-foreground">
-              {totals.withEmail} of {totals.businesses} have email
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="flex items-center gap-2">
-              <CardTitle className="text-sm font-medium">Saturation Index</CardTitle>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs">
-                  <p className="text-sm">
-                    Measures competitive density based on businesses per area. Higher values indicate more saturated markets.
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2">
-              <div className="text-2xl font-bold">{saturationIndex}</div>
-              <Badge variant={saturationVariant}>{saturationLevel}</Badge>
-            </div>
-            <p className="text-xs text-muted-foreground">Competition density</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Charts Row 1: Rating Distribution & Category Share */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Rating Distribution</CardTitle>
-            <CardDescription>How businesses are rated in this market</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={{
-                count: {
-                  label: "Businesses",
-                  color: "hsl(var(--primary))",
-                },
-              }}
-              className="h-[300px]"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={ratingBuckets}>
-                  <XAxis dataKey="bucket" />
-                  <YAxis />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Category Share</CardTitle>
-            <CardDescription>Top business categories in this market</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={{
-                count: {
-                  label: "Businesses",
-                  color: "hsl(var(--primary))",
-                },
-              }}
-              className="h-[300px]"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={categoryShare}
-                    dataKey="count"
-                    nameKey="category"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    label
-                  >
-                    {categoryShare.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Charts Row 2: Top Rated & Review Leaders */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Top Rated Businesses</CardTitle>
-            <CardDescription>Highest rated competitors by reviews</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={{
-                rating: {
-                  label: "Rating",
-                  color: "hsl(var(--chart-2))",
-                },
-              }}
-              className="h-[300px]"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={topRated} layout="vertical">
-                  <XAxis type="number" domain={[0, 5]} />
-                  <YAxis type="category" dataKey="name" width={120} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="rating" fill="hsl(var(--chart-2))" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Review Leaders</CardTitle>
-            <CardDescription>Most reviewed businesses in market</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={{
-                reviewCount: {
-                  label: "Reviews",
-                  color: "hsl(var(--chart-3))",
-                },
-              }}
-              className="h-[300px]"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={reviewLeaders} layout="vertical">
-                  <XAxis type="number" />
-                  <YAxis type="category" dataKey="name" width={120} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="reviewCount" fill="hsl(var(--chart-3))" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Opportunity Score Card */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-primary" />
-            <CardTitle>Market Opportunity Score</CardTitle>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent className="max-w-sm">
-                <p className="text-sm">
-                  Composite score (0-100) combining market saturation, competitor ratings, and data availability. 
-                  Higher scores indicate better opportunities for new market entrants.
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-          <CardDescription>
-            Composite score based on competition, ratings, and data availability (0–100)
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-6">
-            <div className="text-6xl font-bold text-primary">{opportunityScore}</div>
-            <div className="flex-1 space-y-2">
-              <div className="h-4 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary transition-all"
-                  style={{ width: `${opportunityScore}%` }}
+        {/* KPI Cards */}
+        <motion.div 
+          variants={itemVariants}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        >
+          <Card variant="glass" hover="lift" className="shadow-elegant">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Businesses</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center">
+                <Users className="h-5 w-5 text-blue-500" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-extrabold gradient-text mb-2">
+                <AnimatedCounter end={totals.businesses} />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Found in market
+              </p>
+              <div className="mt-3 h-1 bg-muted rounded-full overflow-hidden">
+                <motion.div 
+                  className="h-full bg-gradient-to-r from-blue-500 to-blue-600"
+                  initial={{ width: 0 }}
+                  animate={{ width: '100%' }}
+                  transition={{ duration: 1, delay: 0.5 }}
                 />
               </div>
-              <p className="text-sm text-muted-foreground">
-                {opportunityScore >= 70
-                  ? "High potential — low saturation and weak competitors make this an attractive market."
-                  : opportunityScore >= 40
-                  ? "Medium potential — balanced market with some opportunities for differentiation."
-                  : "Low potential — highly saturated market with strong competitors."}
+            </CardContent>
+          </Card>
+
+          <Card variant="glass" hover="lift" className="shadow-elegant">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Average Rating</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center">
+                <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-extrabold gradient-text mb-2">
+                <AnimatedCounter end={totals.avgRating || 0} decimals={1} />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Median: {totals.medianRating?.toFixed(1) || "N/A"}
               </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+              <div className="mt-3 flex gap-0.5">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    className={`h-4 w-4 ${
+                      star <= (totals.avgRating || 0)
+                        ? 'text-amber-500 fill-amber-500'
+                        : 'text-muted'
+                    }`}
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card variant="glass" hover="lift" className="shadow-elegant">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Email Coverage</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center">
+                <Mail className="h-5 w-5 text-green-500" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-extrabold gradient-text mb-2">
+                <AnimatedCounter end={emailCoveragePct} suffix="%" />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {totals.withEmail} of {totals.businesses} have email
+              </p>
+              <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden">
+                <motion.div 
+                  className="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${emailCoveragePct}%` }}
+                  transition={{ duration: 1, delay: 0.7 }}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card variant="glass" hover="lift" className="shadow-elegant">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Saturation Index</CardTitle>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">
+                    <p className="text-sm">
+                      Measures competitive density. Higher values indicate more saturated markets.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div className="h-10 w-10 rounded-full bg-purple-500/10 flex items-center justify-center">
+                <Activity className="h-5 w-5 text-purple-500" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="text-4xl font-extrabold gradient-text">
+                  <AnimatedCounter end={saturationIndex} decimals={2} />
+                </div>
+                <Badge variant={saturationVariant} size="lg">{saturationLevel}</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground">Competition density</p>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Charts Row 1: Rating Distribution & Category Share */}
+        <motion.div 
+          variants={itemVariants}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        >
+          <Card variant="elevated" hover="lift" className="shadow-elegant">
+            <CardHeader>
+              <CardTitle className="text-2xl flex items-center gap-2">
+                <TrendingUp className="h-6 w-6 text-primary" />
+                Rating Distribution
+              </CardTitle>
+              <CardDescription>Quality spread across the competitive landscape</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer
+                config={{
+                  count: {
+                    label: "Businesses",
+                    color: "hsl(var(--chart-blue))",
+                  },
+                }}
+                className="h-[320px]"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={ratingBuckets}>
+                    <XAxis 
+                      dataKey="bucket" 
+                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                      axisLine={{ stroke: 'hsl(var(--border))' }}
+                    />
+                    <YAxis 
+                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                      axisLine={{ stroke: 'hsl(var(--border))' }}
+                    />
+                    <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: 'hsl(var(--muted))' }} />
+                    <Bar 
+                      dataKey="count" 
+                      radius={[8, 8, 0, 0]}
+                      fill="url(#colorGradient)"
+                    >
+                      {ratingBuckets.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={RATING_COLORS[entry.bucket as keyof typeof RATING_COLORS]} />
+                      ))}
+                    </Bar>
+                    <defs>
+                      <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(var(--chart-blue))" stopOpacity={0.8}/>
+                        <stop offset="100%" stopColor="hsl(var(--chart-blue))" stopOpacity={0.4}/>
+                      </linearGradient>
+                    </defs>
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
+          <Card variant="elevated" hover="lift" className="shadow-elegant">
+            <CardHeader>
+              <CardTitle className="text-2xl flex items-center gap-2">
+                <Target className="h-6 w-6 text-primary" />
+                Category Share
+              </CardTitle>
+              <CardDescription>Market distribution across business types</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer
+                config={{
+                  count: {
+                    label: "Businesses",
+                    color: "hsl(var(--primary))",
+                  },
+                }}
+                className="h-[320px]"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={categoryShare}
+                      dataKey="count"
+                      nameKey="category"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={2}
+                      label={({ category, percent }: any) => 
+                        `${String(category).substring(0, 12)} ${(percent * 100).toFixed(0)}%`
+                      }
+                    >
+                      {categoryShare.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={CATEGORY_COLORS[index % CATEGORY_COLORS.length]}
+                          className="hover:opacity-80 transition-opacity cursor-pointer"
+                        />
+                      ))}
+                    </Pie>
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Legend 
+                      verticalAlign="bottom" 
+                      height={36}
+                      iconType="circle"
+                      wrapperStyle={{ fontSize: '12px' }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Charts Row 2: Top Rated & Review Leaders */}
+        <motion.div 
+          variants={itemVariants}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        >
+          <Card variant="elevated" hover="lift" className="shadow-elegant">
+            <CardHeader>
+              <CardTitle className="text-2xl flex items-center gap-2">
+                <Award className="h-6 w-6 text-primary" />
+                Top Rated Businesses
+              </CardTitle>
+              <CardDescription>Highest quality competitors in the market</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer
+                config={{
+                  rating: {
+                    label: "Rating",
+                    color: "hsl(var(--chart-green))",
+                  },
+                }}
+                className="h-[320px]"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={topRated} layout="vertical" margin={{ left: 20 }}>
+                    <XAxis 
+                      type="number" 
+                      domain={[0, 5]}
+                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                    />
+                    <YAxis 
+                      type="category" 
+                      dataKey="name" 
+                      width={140}
+                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
+                    />
+                    <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: 'hsl(var(--muted))' }} />
+                    <Bar 
+                      dataKey="rating" 
+                      fill="hsl(var(--chart-green))" 
+                      radius={[0, 8, 8, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
+          <Card variant="elevated" hover="lift" className="shadow-elegant">
+            <CardHeader>
+              <CardTitle className="text-2xl flex items-center gap-2">
+                <Users className="h-6 w-6 text-primary" />
+                Review Leaders
+              </CardTitle>
+              <CardDescription>Businesses with strongest social proof</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer
+                config={{
+                  reviewCount: {
+                    label: "Reviews",
+                    color: "hsl(var(--chart-purple))",
+                  },
+                }}
+                className="h-[320px]"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={reviewLeaders} layout="vertical" margin={{ left: 20 }}>
+                    <XAxis 
+                      type="number"
+                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                    />
+                    <YAxis 
+                      type="category" 
+                      dataKey="name" 
+                      width={140}
+                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
+                    />
+                    <ChartTooltip content={<ChartTooltipContent />} cursor={{ fill: 'hsl(var(--muted))' }} />
+                    <Bar 
+                      dataKey="reviewCount" 
+                      fill="hsl(var(--chart-purple))" 
+                      radius={[0, 8, 8, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Opportunity Score - Enhanced with Radial Gauge */}
+        <motion.div variants={itemVariants}>
+          <Card variant="glass" className="shadow-glow border-primary/20">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg">
+                  <Target className="h-6 w-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <CardTitle className="text-3xl">Market Opportunity Score</CardTitle>
+                  <CardDescription className="text-base">
+                    AI-powered composite analysis of market entry potential
+                  </CardDescription>
+                </div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="h-5 w-5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-sm">
+                    <p className="text-sm">
+                      Composite score (0-100) combining market saturation, competitor ratings, and data availability. 
+                      Higher scores indicate better opportunities for market entry.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                {/* Radial Gauge */}
+                <div className="flex justify-center">
+                  <RadialGauge value={opportunityScore} max={100} size={220} strokeWidth={24} />
+                </div>
+
+                {/* Score Breakdown */}
+                <div className="space-y-6">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Competition Quality</span>
+                      <span className="text-sm font-bold">
+                        {totals.avgRating ? (totals.avgRating < 4 ? 'Low' : 'Medium') : 'N/A'}
+                      </span>
+                    </div>
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <motion.div 
+                        className="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: totals.avgRating ? `${(5 - totals.avgRating) * 20}%` : '0%' }}
+                        transition={{ duration: 1, delay: 1.2 }}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Market Saturation</span>
+                      <span className="text-sm font-bold">{saturationLevel}</span>
+                    </div>
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <motion.div 
+                        className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.min(saturationIndex * 2, 100)}%` }}
+                        transition={{ duration: 1, delay: 1.4 }}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Data Quality</span>
+                      <span className="text-sm font-bold">{emailCoveragePct}%</span>
+                    </div>
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <motion.div 
+                        className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${emailCoveragePct}%` }}
+                        transition={{ duration: 1, delay: 1.6 }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {opportunityScore >= 70
+                        ? "🎯 High potential — Low saturation and weak competitors make this an attractive market for new entrants."
+                        : opportunityScore >= 40
+                        ? "⚖️ Medium potential — Balanced market with opportunities for differentiation through quality and service."
+                        : "⚠️ Low potential — Highly saturated market with strong established competitors. Entry requires unique value proposition."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
     </TooltipProvider>
   );
 }
