@@ -13,6 +13,7 @@ import { SettingsPanel } from "@/components/newsletter/SettingsPanel";
 import { useProjects } from "@/store/projects";
 import { toast } from "@/hooks/use-toast";
 import { generateNewsletterContent } from "@/lib/newsletter";
+import { downloadNewsletterPDF } from "@/lib/pdf";
 
 interface Block {
   id: string;
@@ -88,7 +89,7 @@ export default function NewsletterBuilder() {
     }
   };
 
-  const handleExport = (format: "html" | "json") => {
+  const handleExport = async (format: "html" | "json" | "pdf") => {
     if (format === "json") {
       const data = JSON.stringify(blocks, null, 2);
       const blob = new Blob([data], { type: "application/json" });
@@ -97,6 +98,32 @@ export default function NewsletterBuilder() {
       a.href = url;
       a.download = "newsletter.json";
       a.click();
+    } else if (format === "pdf") {
+      try {
+        toast({
+          title: "Generating PDF",
+          description: "Creating your premium PDF download...",
+        });
+        const result = await downloadNewsletterPDF(blocks, project?.title || "Newsletter");
+        if (result.usedBrowserPrint) {
+          toast({
+            title: "Print Dialog Opened",
+            description: "Use your browser's print to PDF feature for best quality",
+          });
+        } else {
+          toast({
+            title: "PDF Downloaded",
+            description: "Your premium PDF has been downloaded successfully",
+          });
+        }
+      } catch (error: any) {
+        console.error("PDF generation error:", error);
+        toast({
+          variant: "destructive",
+          title: "PDF Generation Failed",
+          description: error.message || "Failed to generate PDF. Please try again.",
+        });
+      }
     } else {
       toast({
         title: "Export Started",

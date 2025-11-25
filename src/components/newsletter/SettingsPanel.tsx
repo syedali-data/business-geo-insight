@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface SettingsPanelProps {
   onGenerate: (settings: any) => void;
-  onExport: (format: "html" | "json") => void;
+  onExport: (format: "html" | "json" | "pdf") => void;
   isGenerating: boolean;
 }
 
@@ -129,9 +129,10 @@ export const SettingsPanel = ({ onGenerate, onExport, isGenerating }: SettingsPa
             <Button
               variant="default"
               className="w-full justify-start shadow-elegant"
+              onClick={() => onExport("pdf")}
             >
-              <Send className="h-4 w-4 mr-2" />
-              Send Newsletter
+              <Download className="h-4 w-4 mr-2" />
+              Download Premium PDF
             </Button>
           </CardContent>
         </Card>
