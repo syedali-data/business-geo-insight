@@ -1,5 +1,3 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -11,7 +9,7 @@ interface Block {
   content: any;
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -185,7 +183,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error generating PDF:', error);
     return new Response(
-      JSON.stringify({ error: error.message || 'Failed to generate PDF' }),
+      JSON.stringify({ error: (error as Error).message || 'Failed to generate PDF' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
