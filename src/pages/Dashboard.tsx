@@ -19,6 +19,7 @@ import ActionCard from '@/components/dashboard/ActionCard';
 import ResearchRunItem from '@/components/dashboard/ResearchRunItem';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import EmptyState from '@/components/dashboard/EmptyState';
+import CreditsUsageWidget from '@/components/dashboard/CreditsUsageWidget';
 
 export default function Dashboard() {
   const [createProjectOpen, setCreateProjectOpen] = useState(false);
@@ -31,6 +32,16 @@ export default function Dashboard() {
     leadCount: 247,
     emailCount: 189,
   };
+
+  const usageHistory = [
+    { date: '2024-01-19', credits: 1, label: 'Mon' },
+    { date: '2024-01-20', credits: 2, label: 'Tue' },
+    { date: '2024-01-21', credits: 0, label: 'Wed' },
+    { date: '2024-01-22', credits: 1, label: 'Thu' },
+    { date: '2024-01-23', credits: 3, label: 'Fri' },
+    { date: '2024-01-24', credits: 2, label: 'Sat' },
+    { date: '2024-01-25', credits: 1, label: 'Sun' },
+  ];
 
   const recentRuns = [
     {
@@ -133,34 +144,42 @@ export default function Dashboard() {
             />
           </div>
 
-          {/* Action Cards */}
-          <div className="grid md:grid-cols-2 gap-6 mb-10">
-            <ActionCard
-              title="Start New Research"
-              description="Generate fresh leads for any city and profession"
-              icon={TrendingUp}
-              variant="primary"
-              buttonText="Create Project"
-              buttonIcon={Plus}
-              onClick={() => setCreateProjectOpen(true)}
+          {/* Credits Usage Widget + Action Cards */}
+          <div className="grid lg:grid-cols-3 gap-6 mb-10">
+            <CreditsUsageWidget
+              creditsRemaining={usage.creditsRemaining}
+              creditsTotal={usage.creditsTotal}
+              usageHistory={usageHistory}
               delay={0.5}
             />
-            <ActionCard
-              title="Generate Newsletter"
-              description="Create AI-powered newsletters from your research"
-              icon={FileText}
-              variant="secondary"
-              buttonText="Open Newsletter Hub"
-              onClick={() => window.location.href = '/newsletter'}
-              delay={0.6}
-            />
+            <div className="lg:col-span-2 grid md:grid-cols-2 gap-6">
+              <ActionCard
+                title="Start New Research"
+                description="Generate fresh leads for any city and profession"
+                icon={TrendingUp}
+                variant="primary"
+                buttonText="Create Project"
+                buttonIcon={Plus}
+                onClick={() => setCreateProjectOpen(true)}
+                delay={0.6}
+              />
+              <ActionCard
+                title="Generate Newsletter"
+                description="Create AI-powered newsletters from your research"
+                icon={FileText}
+                variant="secondary"
+                buttonText="Open Newsletter Hub"
+                onClick={() => window.location.href = '/newsletter'}
+                delay={0.7}
+              />
+            </div>
           </div>
 
           {/* Recent Research Runs */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.5 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-heading text-2xl font-semibold">Recent Research Runs</h2>
