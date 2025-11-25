@@ -26,6 +26,16 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          50: "hsl(var(--primary-50))",
+          100: "hsl(var(--primary-100))",
+          200: "hsl(var(--primary-200))",
+          300: "hsl(var(--primary-300))",
+          400: "hsl(var(--primary-400))",
+          500: "hsl(var(--primary-500))",
+          600: "hsl(var(--primary-600))",
+          700: "hsl(var(--primary-700))",
+          800: "hsl(var(--primary-800))",
+          900: "hsl(var(--primary-900))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -42,6 +52,11 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          success: "hsl(var(--accent-success))",
+          warning: "hsl(var(--accent-warning))",
+          error: "hsl(var(--accent-error))",
+          purple: "hsl(var(--accent-purple))",
+          pink: "hsl(var(--accent-pink))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -50,6 +65,16 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        chart: {
+          blue: "hsl(var(--chart-blue))",
+          green: "hsl(var(--chart-green))",
+          amber: "hsl(var(--chart-amber))",
+          red: "hsl(var(--chart-red))",
+          purple: "hsl(var(--chart-purple))",
+          pink: "hsl(var(--chart-pink))",
+          teal: "hsl(var(--chart-teal))",
+          orange: "hsl(var(--chart-orange))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -63,9 +88,21 @@ export default {
         },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        sm: "var(--radius-sm)",
+        md: "var(--radius-md)",
+        lg: "var(--radius-lg)",
+        xl: "var(--radius-xl)",
+        "2xl": "var(--radius-2xl)",
+      },
+      boxShadow: {
+        sm: "var(--shadow-sm)",
+        md: "var(--shadow-md)",
+        lg: "var(--shadow-lg)",
+        xl: "var(--shadow-xl)",
+        "2xl": "var(--shadow-2xl)",
+        elegant: "var(--shadow-elegant)",
+        glow: "var(--shadow-glow)",
+        card: "var(--shadow-card)",
       },
       keyframes: {
         "accordion-down": {
