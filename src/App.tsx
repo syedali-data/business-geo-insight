@@ -14,6 +14,7 @@ import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
 import NewsletterHub from "./pages/NewsletterHub";
 import NewsletterComposer from "./pages/NewsletterComposer";
+import NewsletterBuilder from "./pages/NewsletterBuilder";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/projects/:id" element={<ProjectDetail />} />
             <Route path="/newsletter" element={<NewsletterHub />} />
             <Route path="/newsletter/:id" element={<NewsletterComposer />} />
+            <Route path="/newsletter/:id/builder" element={<NewsletterBuilder />} />
             <Route path="/settings" element={<Settings />} />
             
             {/* 404 fallback */}
