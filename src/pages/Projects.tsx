@@ -5,10 +5,11 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Plus, Search } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CreateProjectModal from '@/components/projects/CreateProjectModal';
 import { useProjects } from '@/store/projects';
+import AppShell from '@/components/layout/AppShell';
 
 export default function Projects() {
   const { projects } = useProjects();
@@ -30,28 +31,7 @@ export default function Projects() {
         <title>Projects - LocalPulse</title>
       </Helmet>
 
-      <div className="min-h-screen bg-background">
-        {/* Header */}
-        <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <Sparkles className="h-6 w-6 text-primary" />
-              <span className="font-heading text-xl font-bold">LocalPulse</span>
-            </Link>
-            <nav className="hidden md:flex items-center gap-6">
-              <Link to="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
-                Dashboard
-              </Link>
-              <Link to="/newsletter" className="text-sm font-medium hover:text-primary transition-colors">
-                Newsletter
-              </Link>
-              <Link to="/settings" className="text-sm font-medium hover:text-primary transition-colors">
-                Settings
-              </Link>
-            </nav>
-          </div>
-        </header>
-
+      <AppShell>
         {/* Content */}
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-6xl mx-auto space-y-6">
@@ -129,7 +109,7 @@ export default function Projects() {
             <CreateProjectModal open={open} onOpenChange={setOpen} />
           </div>
         </div>
-      </div>
+      </AppShell>
     </>
   );
 }

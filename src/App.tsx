@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import { ThemeProvider } from "@/hooks/useTheme";
 import Home from "./pages/Home";
 import Pricing from "./pages/Pricing";
 import CaseStudies from "./pages/CaseStudies";
@@ -23,31 +24,33 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <HelmetProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/case-studies" element={<CaseStudies />} />
-            <Route path="/r/:publicId" element={<PublicReport />} />
-            
-            {/* App routes (authenticated) */}
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/projects/:id" element={<ProjectDetail />} />
-            <Route path="/newsletter" element={<NewsletterHub />} />
-            <Route path="/newsletter/:id" element={<NewsletterComposer />} />
-            <Route path="/newsletter/:id/builder" element={<NewsletterBuilder />} />
-            <Route path="/settings" element={<Settings />} />
-            
-            {/* 404 fallback */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <ThemeProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/case-studies" element={<CaseStudies />} />
+              <Route path="/r/:publicId" element={<PublicReport />} />
+              
+              {/* App routes (authenticated) */}
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/projects/:id" element={<ProjectDetail />} />
+              <Route path="/newsletter" element={<NewsletterHub />} />
+              <Route path="/newsletter/:id" element={<NewsletterComposer />} />
+              <Route path="/newsletter/:id/builder" element={<NewsletterBuilder />} />
+              <Route path="/settings" element={<Settings />} />
+              
+              {/* 404 fallback */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
     </HelmetProvider>
   </QueryClientProvider>
 );

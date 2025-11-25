@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { 
-  Sparkles, 
   TrendingUp, 
   Users, 
   Mail,
   FileText,
   Calendar,
   Plus,
-  ArrowRight
+  ArrowRight,
+  Sparkles
 } from 'lucide-react';
 import { useState } from 'react';
 import CreateProjectModal from '@/components/projects/CreateProjectModal';
@@ -21,6 +21,7 @@ import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import EmptyState from '@/components/dashboard/EmptyState';
 import CreditsUsageWidget from '@/components/dashboard/CreditsUsageWidget';
 import { useCredits } from '@/hooks/useCredits';
+import AppShell from '@/components/layout/AppShell';
 
 export default function Dashboard() {
   const [createProjectOpen, setCreateProjectOpen] = useState(false);
@@ -61,33 +62,7 @@ export default function Dashboard() {
         <title>Dashboard - LocalPulse</title>
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
-        {/* Header */}
-        <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-50">
-          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2 group">
-              <motion.div
-                whileHover={{ rotate: 180 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Sparkles className="h-6 w-6 text-primary" />
-              </motion.div>
-              <span className="font-heading text-xl font-bold">LocalPulse</span>
-            </Link>
-            <nav className="flex items-center gap-2">
-              <Link to="/projects">
-                <Button variant="ghost" size="sm">Projects</Button>
-              </Link>
-              <Link to="/newsletter">
-                <Button variant="ghost" size="sm">Newsletter</Button>
-              </Link>
-              <Link to="/settings">
-                <Button variant="ghost" size="sm">Settings</Button>
-              </Link>
-            </nav>
-          </div>
-        </header>
-
+      <AppShell className="bg-gradient-to-br from-background via-background to-muted/30">
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -206,7 +181,7 @@ export default function Dashboard() {
         </motion.div>
 
         <CreateProjectModal open={createProjectOpen} onOpenChange={setCreateProjectOpen} />
-      </div>
+      </AppShell>
     </>
   );
 }

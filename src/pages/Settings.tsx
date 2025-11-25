@@ -5,8 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import AppShell from '@/components/layout/AppShell';
 
 export default function Settings() {
   return (
@@ -15,25 +14,7 @@ export default function Settings() {
         <title>Settings - LocalPulse</title>
       </Helmet>
 
-      <div className="min-h-screen bg-background">
-        {/* Header */}
-        <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <Sparkles className="h-6 w-6 text-primary" />
-              <span className="font-heading text-xl font-bold">LocalPulse</span>
-            </Link>
-            <nav className="hidden md:flex items-center gap-6">
-              <Link to="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
-                Dashboard
-              </Link>
-              <Link to="/pricing" className="text-sm font-medium hover:text-primary transition-colors">
-                Pricing
-              </Link>
-            </nav>
-          </div>
-        </header>
-
+      <AppShell>
         {/* Content */}
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto space-y-6">
@@ -140,7 +121,7 @@ export default function Settings() {
             </Tabs>
           </div>
         </div>
-      </div>
+      </AppShell>
     </>
   );
 }
