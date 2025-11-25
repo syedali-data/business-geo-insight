@@ -91,7 +91,7 @@ export default function Dashboard() {
           className="container mx-auto px-4 py-10 max-w-7xl"
         >
           {/* Page Header */}
-          <DashboardHeader onNewProject={() => setCreateProjectOpen(true)} />
+          <DashboardHeader />
 
           {/* KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
