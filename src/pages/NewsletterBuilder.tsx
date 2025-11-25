@@ -12,6 +12,7 @@ import { NewsletterCanvas } from "@/components/newsletter/NewsletterCanvas";
 import { SettingsPanel } from "@/components/newsletter/SettingsPanel";
 import { useProjects } from "@/store/projects";
 import { toast } from "@/hooks/use-toast";
+import { generateNewsletterContent } from "@/lib/newsletter";
 
 interface Block {
   id: string;
@@ -43,41 +44,44 @@ export default function NewsletterBuilder() {
   };
 
   const handleGenerate = async (settings: any) => {
+    if (!project) return;
+    
     setIsGenerating(true);
     try {
-      // Simulate AI generation
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      
-      const generatedBlocks: Block[] = [
-        {
-          id: `block-${Date.now()}-1`,
-          type: "heading",
-          content: { text: "Market Insights for " + project?.city },
+      const result = await generateNewsletterContent({
+        projectData: {
+          title: project.title,
+          city: project.city,
+          region: project.region,
+          country: project.country,
+          professionLabel: project.professionLabel,
+          keywords: project.keywords,
         },
-        {
-          id: `block-${Date.now()}-2`,
-          type: "text",
-          content: {
-            text: "Discover the latest trends and opportunities in your local market. Our AI-powered analysis has uncovered valuable insights for your business.",
-          },
+        settings: {
+          template: settings.template,
+          tone: settings.tone,
+          length: settings.length,
+          prompt: settings.prompt,
         },
-        {
-          id: `block-${Date.now()}-3`,
-          type: "button",
-          content: { text: "View Full Report", url: "#" },
-        },
-      ];
-      
+      });
+
+      const generatedBlocks: Block[] = result.blocks.map((block: any, index: number) => ({
+        id: `block-${Date.now()}-${index}`,
+        type: block.type,
+        content: block.content,
+      }));
+
       setBlocks(generatedBlocks);
       toast({
         title: "Content Generated",
         description: "Your newsletter content has been generated successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Generation error:", error);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to generate content",
+        title: "Generation Failed",
+        description: error.message || "Failed to generate content. Please try again.",
       });
     } finally {
       setIsGenerating(false);
