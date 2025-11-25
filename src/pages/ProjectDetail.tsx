@@ -21,6 +21,7 @@ import { computeInsights, Insights } from '@/lib/insights';
 import { InsightsTab } from '@/components/projects/InsightsTab';
 import { ResultsTab } from '@/components/projects/ResultsTab';
 import { Lead } from '@/types';
+import { useCredits } from '@/hooks/useCredits';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,6 +39,7 @@ export default function ProjectDetail() {
   const project = useProjects((s) => s.getProject(id!));
   const updateProject = useProjects((s) => s.updateProject);
   const deleteProject = useProjects((s) => s.deleteProject);
+  const { logUsage, credits } = useCredits();
   
   const [templateId, setTemplateId] = useState('default');
   const [tone, setTone] = useState<'professional' | 'friendly'>('professional');
@@ -120,10 +122,33 @@ export default function ProjectDetail() {
     );
   }
 
+  // Calculate credits based on max_leads
+  const getCreditsForRun = (maxLeads: number) => {
+    if (maxLeads <= 100) return 1;
+    if (maxLeads <= 150) return 2;
+    return 3;
+  };
+
   // Market research mutation
   const runMutation = useMutation({
     mutationFn: (payload: any) => runMarketResearch(payload),
-    onSuccess: (data: any) => {
+    onSuccess: async (data: any) => {
+      const maxLeads = project?.maxLeads || 100;
+      const creditsUsed = getCreditsForRun(maxLeads);
+      
+      // Log credit usage
+      try {
+        await logUsage({
+          projectId: project?.id || '',
+          projectTitle: project?.title || '',
+          creditsUsed,
+          leadsGenerated: maxLeads,
+          actionType: 'research_run',
+        });
+      } catch (err) {
+        console.error('Failed to log credit usage:', err);
+      }
+
       if (data?.status === 'queued') {
         toast({
           title: 'Research Queued',
@@ -164,6 +189,19 @@ export default function ProjectDetail() {
   });
 
   const handleRunResearch = () => {
+    const maxLeads = project.maxLeads || 100;
+    const creditsNeeded = getCreditsForRun(maxLeads);
+    
+    // Check if user has enough credits
+    if (credits.creditsRemaining < creditsNeeded) {
+      toast({
+        variant: 'destructive',
+        title: 'Insufficient Credits',
+        description: `You need ${creditsNeeded} credit${creditsNeeded > 1 ? 's' : ''} but only have ${credits.creditsRemaining} remaining.`,
+      });
+      return;
+    }
+    
     runMutation.mutate({
       projectId: project.id!,
       country: project.country,
@@ -173,7 +211,7 @@ export default function ProjectDetail() {
       profession_code: project.professionCode,
       profession_label: project.professionLabel,
       keywords: project.keywords,
-      max_leads: project.maxLeads || 100,
+      max_leads: maxLeads,
       enrich: true,
       validate_emails: true,
     });
