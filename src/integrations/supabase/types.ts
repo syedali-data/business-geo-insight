@@ -17,8 +17,11 @@ export type Database = {
       credit_usage: {
         Row: {
           action_type: string
+          cost_per_lead: number | null
           created_at: string
+          credits_cost: number | null
           credits_used: number
+          estimated_leads: number | null
           id: string
           leads_generated: number | null
           metadata: Json | null
@@ -28,8 +31,11 @@ export type Database = {
         }
         Insert: {
           action_type?: string
+          cost_per_lead?: number | null
           created_at?: string
+          credits_cost?: number | null
           credits_used?: number
+          estimated_leads?: number | null
           id?: string
           leads_generated?: number | null
           metadata?: Json | null
@@ -39,8 +45,11 @@ export type Database = {
         }
         Update: {
           action_type?: string
+          cost_per_lead?: number | null
           created_at?: string
+          credits_cost?: number | null
           credits_used?: number
+          estimated_leads?: number | null
           id?: string
           leads_generated?: number | null
           metadata?: Json | null
@@ -52,32 +61,53 @@ export type Database = {
       }
       user_credits: {
         Row: {
+          auto_recharge_enabled: boolean | null
+          billing_period_end: string | null
           billing_period_start: string
+          cost_per_credit: number | null
           created_at: string
           credits_remaining: number
           credits_total: number
+          credits_used_this_period: number | null
           id: string
           plan: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_status: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          auto_recharge_enabled?: boolean | null
+          billing_period_end?: string | null
           billing_period_start?: string
+          cost_per_credit?: number | null
           created_at?: string
           credits_remaining?: number
           credits_total?: number
+          credits_used_this_period?: number | null
           id?: string
           plan?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_status?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          auto_recharge_enabled?: boolean | null
+          billing_period_end?: string | null
           billing_period_start?: string
+          cost_per_credit?: number | null
           created_at?: string
           credits_remaining?: number
           credits_total?: number
+          credits_used_this_period?: number | null
           id?: string
           plan?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_status?: string | null
           updated_at?: string
           user_id?: string
         }

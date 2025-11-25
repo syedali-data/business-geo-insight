@@ -6,6 +6,14 @@ export interface UserCredits {
   creditsRemaining: number;
   creditsTotal: number;
   plan: string;
+  subscriptionStatus: string;
+  billingPeriodStart?: string;
+  billingPeriodEnd?: string;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  autoRechargeEnabled: boolean;
+  costPerCredit: number;
+  creditsUsedThisPeriod: number;
 }
 
 export interface CreditUsageItem {
@@ -39,6 +47,10 @@ const mockCredits: UserCredits = {
   creditsRemaining: 15,
   creditsTotal: 20,
   plan: 'starter',
+  subscriptionStatus: 'active',
+  autoRechargeEnabled: false,
+  costPerCredit: 0.49,
+  creditsUsedThisPeriod: 5,
 };
 
 const mockUsageHistory: CreditUsageItem[] = [
@@ -94,6 +106,14 @@ export function useCredits(): UseCreditsReturn {
           creditsRemaining: creditsData.credits_remaining,
           creditsTotal: creditsData.credits_total,
           plan: creditsData.plan,
+          subscriptionStatus: (creditsData as any).subscription_status || 'active',
+          billingPeriodStart: creditsData.billing_period_start,
+          billingPeriodEnd: (creditsData as any).billing_period_end,
+          stripeCustomerId: (creditsData as any).stripe_customer_id,
+          stripeSubscriptionId: (creditsData as any).stripe_subscription_id,
+          autoRechargeEnabled: (creditsData as any).auto_recharge_enabled || false,
+          costPerCredit: (creditsData as any).cost_per_credit || 0.49,
+          creditsUsedThisPeriod: (creditsData as any).credits_used_this_period || 0,
         });
       } else {
         // Create initial credits record for new user
@@ -118,6 +138,10 @@ export function useCredits(): UseCreditsReturn {
             creditsRemaining: newCredits.credits_remaining,
             creditsTotal: newCredits.credits_total,
             plan: newCredits.plan,
+            subscriptionStatus: 'active',
+            autoRechargeEnabled: false,
+            costPerCredit: 0.49,
+            creditsUsedThisPeriod: 0,
           });
         }
       }
@@ -223,6 +247,7 @@ export function useCredits(): UseCreditsReturn {
         ? dollarCost / params.leadsGenerated 
         : null;
 
+      // Use the new database columns for cost tracking
       const { error: insertError } = await supabase
         .from('credit_usage')
         .insert({
@@ -232,14 +257,15 @@ export function useCredits(): UseCreditsReturn {
           credits_used: params.creditsUsed,
           leads_generated: params.leadsGenerated,
           action_type: params.actionType || 'research_run',
+          // New columns for cost tracking
+          credits_cost: parseFloat(dollarCost.toFixed(2)),
+          cost_per_lead: costPerLead ? parseFloat(costPerLead.toFixed(4)) : null,
+          estimated_leads: params.estimatedLeads,
           metadata: {
             tier: credits.plan,
-            dollarCost: parseFloat(dollarCost.toFixed(2)),
-            costPerLead: costPerLead ? parseFloat(costPerLead.toFixed(4)) : null,
-            estimatedLeads: params.estimatedLeads,
             timestamp: new Date().toISOString()
           }
-        });
+        } as any);
 
       if (insertError) {
         console.error('Error logging usage:', insertError);
