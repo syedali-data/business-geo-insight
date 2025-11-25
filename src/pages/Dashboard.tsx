@@ -20,28 +20,21 @@ import ResearchRunItem from '@/components/dashboard/ResearchRunItem';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import EmptyState from '@/components/dashboard/EmptyState';
 import CreditsUsageWidget from '@/components/dashboard/CreditsUsageWidget';
+import { useCredits } from '@/hooks/useCredits';
 
 export default function Dashboard() {
   const [createProjectOpen, setCreateProjectOpen] = useState(false);
+  const { credits, usageHistory, isLoading: creditsLoading } = useCredits();
   
-  // Mock data
+  // Compute stats from credits data
+  const creditsUsed = credits.creditsTotal - credits.creditsRemaining;
+  
+  // Mock additional data (would come from runs table in production)
   const usage = {
-    creditsRemaining: 15,
-    creditsTotal: 20,
-    runCount: 5,
+    runCount: usageHistory.filter(u => u.credits > 0).length,
     leadCount: 247,
     emailCount: 189,
   };
-
-  const usageHistory = [
-    { date: '2024-01-19', credits: 1, label: 'Mon' },
-    { date: '2024-01-20', credits: 2, label: 'Tue' },
-    { date: '2024-01-21', credits: 0, label: 'Wed' },
-    { date: '2024-01-22', credits: 1, label: 'Thu' },
-    { date: '2024-01-23', credits: 3, label: 'Fri' },
-    { date: '2024-01-24', credits: 2, label: 'Sat' },
-    { date: '2024-01-25', credits: 1, label: 'Sun' },
-  ];
 
   const recentRuns = [
     {
@@ -60,7 +53,7 @@ export default function Dashboard() {
     },
   ];
 
-  const emailSuccessRate = Math.round((usage.emailCount / usage.leadCount) * 100);
+  const emailSuccessRate = usage.leadCount > 0 ? Math.round((usage.emailCount / usage.leadCount) * 100) : 0;
 
   return (
     <>
@@ -108,13 +101,13 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
             <KPICard
               title="Credits Remaining"
-              value={usage.creditsRemaining}
-              suffix={`/ ${usage.creditsTotal}`}
-              subtitle={`${Math.round((usage.creditsRemaining / usage.creditsTotal) * 100)}% remaining`}
+              value={credits.creditsRemaining}
+              suffix={`/ ${credits.creditsTotal}`}
+              subtitle={`${Math.round((credits.creditsRemaining / credits.creditsTotal) * 100)}% remaining`}
               icon={Sparkles}
               iconColor="cyan"
               delay={0.1}
-              progress={{ value: usage.creditsRemaining, max: usage.creditsTotal }}
+              progress={{ value: credits.creditsRemaining, max: credits.creditsTotal }}
             />
             <KPICard
               title="Total Leads"
@@ -147,8 +140,8 @@ export default function Dashboard() {
           {/* Credits Usage Widget + Action Cards */}
           <div className="grid lg:grid-cols-3 gap-6 mb-10">
             <CreditsUsageWidget
-              creditsRemaining={usage.creditsRemaining}
-              creditsTotal={usage.creditsTotal}
+              creditsRemaining={credits.creditsRemaining}
+              creditsTotal={credits.creditsTotal}
               usageHistory={usageHistory}
               delay={0.5}
             />
