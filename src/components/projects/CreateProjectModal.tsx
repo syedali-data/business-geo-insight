@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCredits } from "@/hooks/useCredits";
-import { AlertCircle } from "lucide-react";
+import { calculateCredits, calculateCreditCost } from "@/lib/billing";
+import { CreditCostPreview } from "@/components/billing/CreditCostPreview";
 
 const schema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -26,10 +27,6 @@ const schema = z.object({
   leadsRange: z.string().optional(),
   insightsRange: z.string().optional(),
 });
-
-const BASE_LEADS = 100;
-const CREDITS_PER_LEAD = 1;
-const BASE_PROJECT_COST = 1; // Base cost to create a project
 
 interface CreateProjectModalProps {
   open: boolean;
@@ -51,14 +48,11 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
     insightsRange: "Insights!A1:Z",
   });
 
-  const extraCredits = useMemo(() => {
-    const leads = form.maxLeads || BASE_LEADS;
-    return Math.max(0, (leads - BASE_LEADS) * CREDITS_PER_LEAD);
-  }, [form.maxLeads]);
-
-  const totalCreditsNeeded = BASE_PROJECT_COST + extraCredits;
-  const hasEnoughCredits = credits.creditsRemaining >= totalCreditsNeeded;
-  const creditsShortfall = totalCreditsNeeded - credits.creditsRemaining;
+  // Use the new volume-based pricing formula
+  const maxLeads = form.maxLeads || 100;
+  const creditsRequired = calculateCredits(maxLeads);
+  const costBreakdown = calculateCreditCost(maxLeads, credits.plan as any || 'starter');
+  const hasEnoughCredits = credits.creditsRemaining >= creditsRequired;
 
   function update(k: string, v: any) {
     setForm((f: any) => ({ ...f, [k]: v }));
@@ -203,11 +197,11 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <Label htmlFor="maxLeads">Number of Leads</Label>
-                    <span className="text-sm font-medium text-primary">{form.maxLeads || 100} leads</span>
+                    <span className="text-sm font-medium text-primary">{maxLeads} leads</span>
                   </div>
                   <Slider
                     id="maxLeads"
-                    value={[form.maxLeads || 100]}
+                    value={[maxLeads]}
                     onValueChange={([value]) => update("maxLeads", value)}
                     min={100}
                     max={1000}
@@ -215,28 +209,19 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                    <span>100 (included)</span>
+                    <span>100 (base)</span>
                     <span>1000</span>
                   </div>
                 </div>
-                {extraCredits > 0 && (
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-accent/50 border border-accent">
-                    <span className="text-sm text-muted-foreground">Extra credits for additional leads:</span>
-                    <span className="text-sm font-semibold text-primary">+{extraCredits} credits</span>
-                  </div>
-                )}
-                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border">
-                  <span className="text-sm text-muted-foreground">Total credits needed:</span>
-                  <span className="text-sm font-semibold">{totalCreditsNeeded} credits</span>
-                </div>
-                {!creditsLoading && !hasEnoughCredits && (
-                  <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive">
-                    <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-                    <div className="text-sm">
-                      <p className="font-medium">Insufficient credits</p>
-                      <p className="text-destructive/80">You need {creditsShortfall} more credit{creditsShortfall > 1 ? 's' : ''} to create this project. Current balance: {credits.creditsRemaining}</p>
-                    </div>
-                  </div>
+                
+                {/* Enhanced Credit Cost Preview */}
+                {!creditsLoading && (
+                  <CreditCostPreview
+                    leadCount={maxLeads}
+                    userCreditsRemaining={credits.creditsRemaining}
+                    userTier={credits.plan}
+                    compact
+                  />
                 )}
               </div>
             </div>
@@ -279,7 +264,7 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
             Cancel
           </Button>
           <Button onClick={create} disabled={pending || creditsLoading || !hasEnoughCredits}>
-            {pending ? "Creating..." : `Create Project (${totalCreditsNeeded} credit${totalCreditsNeeded > 1 ? 's' : ''})`}
+            {pending ? "Creating..." : `Create Project (${creditsRequired} credit${creditsRequired !== 1 ? 's' : ''} · $${costBreakdown.dollarCost})`}
           </Button>
         </div>
       </DialogContent>

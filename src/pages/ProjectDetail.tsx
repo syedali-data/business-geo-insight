@@ -22,6 +22,8 @@ import { InsightsTab } from '@/components/projects/InsightsTab';
 import { ResultsTab } from '@/components/projects/ResultsTab';
 import { Lead } from '@/types';
 import { useCredits } from '@/hooks/useCredits';
+import { calculateCredits, calculateCreditCost } from '@/lib/billing';
+import { CreditCostPreview } from '@/components/billing/CreditCostPreview';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -122,11 +124,9 @@ export default function ProjectDetail() {
     );
   }
 
-  // Calculate credits based on max_leads
+  // Calculate credits using the new volume-based pricing formula
   const getCreditsForRun = (maxLeads: number) => {
-    if (maxLeads <= 100) return 1;
-    if (maxLeads <= 150) return 2;
-    return 3;
+    return calculateCredits(maxLeads);
   };
 
   // Market research mutation
@@ -314,37 +314,52 @@ export default function ProjectDetail() {
                     </div>
                   </div>
 
-                  <div className="border-t pt-6">
+                  <div className="border-t pt-6 space-y-4">
                     {/* Dynamic estimates based on max_leads */}
                     {(() => {
                       const maxLeads = project.maxLeads || 100;
                       const minTime = Math.max(1, Math.round(maxLeads / 50));
                       const maxTime = Math.round(maxLeads / 40) + 1;
-                      const credits = maxLeads <= 100 ? 1 : maxLeads <= 150 ? 2 : 3;
+                      const creditsNeeded = calculateCredits(maxLeads);
+                      const costInfo = calculateCreditCost(maxLeads, credits.plan as any || 'starter');
+                      
                       return (
-                        <div className="mb-4 p-3 rounded-lg bg-muted/50 border">
-                          <div className="flex flex-wrap gap-4 text-sm">
-                            <div className="flex items-center gap-2">
-                              <span className="text-muted-foreground">Est. Time:</span>
-                              <span className="font-medium">{minTime}-{maxTime} min</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-muted-foreground">Credits:</span>
-                              <span className="font-medium">{credits} credit{credits > 1 ? 's' : ''}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-muted-foreground">Target:</span>
-                              <span className="font-medium">{maxLeads} leads</span>
+                        <>
+                          <div className="p-3 rounded-lg bg-muted/50 border">
+                            <div className="flex flex-wrap gap-4 text-sm">
+                              <div className="flex items-center gap-2">
+                                <span className="text-muted-foreground">Est. Time:</span>
+                                <span className="font-medium">{minTime}-{maxTime} min</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-muted-foreground">Credits:</span>
+                                <span className="font-medium">{creditsNeeded} credit{creditsNeeded !== 1 ? 's' : ''}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-muted-foreground">Cost:</span>
+                                <span className="font-medium">${costInfo.dollarCost}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-muted-foreground">Target:</span>
+                                <span className="font-medium">{maxLeads} leads</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
+                          
+                          {/* Enhanced Credit Preview */}
+                          <CreditCostPreview
+                            leadCount={maxLeads}
+                            userCreditsRemaining={credits.creditsRemaining}
+                            userTier={credits.plan}
+                          />
+                        </>
                       );
                     })()}
                     <Button 
                       size="lg" 
                       className="w-full md:w-auto shadow-elegant"
                       onClick={handleRunResearch}
-                      disabled={runMutation.isPending}
+                      disabled={runMutation.isPending || credits.creditsRemaining < getCreditsForRun(project.maxLeads || 100)}
                     >
                       <Play className="mr-2 h-4 w-4" />
                       {runMutation.isPending ? 'Starting...' : 'Run Research'}
