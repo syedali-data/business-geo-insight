@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { getTierInfo } from '@/lib/billing';
 
 export interface UserCredits {
   creditsRemaining: number;
@@ -14,6 +15,7 @@ export interface CreditUsageItem {
   label: string;
   projectTitle?: string;
   actionType: string;
+  dollarCost?: number;
 }
 
 interface UseCreditsReturn {
@@ -27,6 +29,7 @@ interface UseCreditsReturn {
     projectTitle: string;
     creditsUsed: number;
     leadsGenerated?: number;
+    estimatedLeads?: number;
     actionType?: string;
   }) => Promise<void>;
 }
@@ -202,6 +205,7 @@ export function useCredits(): UseCreditsReturn {
     projectTitle: string;
     creditsUsed: number;
     leadsGenerated?: number;
+    estimatedLeads?: number;
     actionType?: string;
   }) => {
     try {
@@ -212,6 +216,13 @@ export function useCredits(): UseCreditsReturn {
         return;
       }
 
+      // Calculate dollar costs based on user's tier
+      const tierInfo = getTierInfo(credits.plan);
+      const dollarCost = params.creditsUsed * tierInfo.costPerCredit;
+      const costPerLead = params.leadsGenerated 
+        ? dollarCost / params.leadsGenerated 
+        : null;
+
       const { error: insertError } = await supabase
         .from('credit_usage')
         .insert({
@@ -221,6 +232,13 @@ export function useCredits(): UseCreditsReturn {
           credits_used: params.creditsUsed,
           leads_generated: params.leadsGenerated,
           action_type: params.actionType || 'research_run',
+          metadata: {
+            tier: credits.plan,
+            dollarCost: parseFloat(dollarCost.toFixed(2)),
+            costPerLead: costPerLead ? parseFloat(costPerLead.toFixed(4)) : null,
+            estimatedLeads: params.estimatedLeads,
+            timestamp: new Date().toISOString()
+          }
         });
 
       if (insertError) {
