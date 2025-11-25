@@ -1,5 +1,8 @@
 project_id = "lhaxluzmxrafcfsktufm"
 
+[functions.runMarketResearch]
+verify_jwt = false
+
 [functions.generateNewsletterContent]
 verify_jwt = false
 
