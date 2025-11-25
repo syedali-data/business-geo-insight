@@ -557,12 +557,12 @@ export default function ProjectDetail() {
                           value={[editForm.maxLeads || 100]}
                           onValueChange={([v]) => updateEditForm('maxLeads', v)}
                           min={50}
-                          max={200}
+                          max={500}
                           step={10}
                           className="mt-2"
                         />
                         <p className="text-xs text-muted-foreground mt-1">
-                          Controls how many leads to collect per research run (50-200)
+                          Controls how many leads to collect per research run (50-500)
                         </p>
                       </div>
 
