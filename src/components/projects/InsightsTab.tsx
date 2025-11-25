@@ -36,12 +36,12 @@ const itemVariants = {
 export function InsightsTab({ insights }: InsightsTabProps) {
   const { totals, ratingBuckets, categoryShare, topRated, reviewLeaders, emailCoveragePct, saturationIndex, opportunityScore } = insights;
 
-  // Enhanced color palette from design system
+  // Enhanced color palette - Premium gradient colors for dark mode
   const RATING_COLORS = {
-    "< 3": "hsl(var(--chart-red))",
-    "3-3.9": "hsl(var(--chart-amber))",
-    "4-4.4": "hsl(var(--chart-blue))",
-    "4.5-5": "hsl(var(--chart-green))",
+    "< 3": "hsl(0 84% 60%)",
+    "3-3.9": "hsl(38 92% 55%)",
+    "4-4.4": "hsl(210 100% 60%)",
+    "4.5-5": "hsl(152 69% 50%)",
   };
 
   const CATEGORY_COLORS = [
@@ -258,16 +258,30 @@ export function InsightsTab({ insights }: InsightsTabProps) {
                     <Bar 
                       dataKey="count" 
                       radius={[8, 8, 0, 0]}
-                      fill="url(#colorGradient)"
                     >
                       {ratingBuckets.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={RATING_COLORS[entry.bucket as keyof typeof RATING_COLORS]} />
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={`url(#gradient-${entry.bucket.replace(/[^a-zA-Z0-9]/g, '')})`}
+                        />
                       ))}
                     </Bar>
                     <defs>
-                      <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="hsl(var(--chart-blue))" stopOpacity={0.8}/>
-                        <stop offset="100%" stopColor="hsl(var(--chart-blue))" stopOpacity={0.4}/>
+                      <linearGradient id="gradient-3" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(0 84% 65%)" stopOpacity={1}/>
+                        <stop offset="100%" stopColor="hsl(0 84% 45%)" stopOpacity={0.8}/>
+                      </linearGradient>
+                      <linearGradient id="gradient-339" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(38 92% 60%)" stopOpacity={1}/>
+                        <stop offset="100%" stopColor="hsl(38 92% 40%)" stopOpacity={0.8}/>
+                      </linearGradient>
+                      <linearGradient id="gradient-444" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(210 100% 65%)" stopOpacity={1}/>
+                        <stop offset="100%" stopColor="hsl(210 100% 45%)" stopOpacity={0.8}/>
+                      </linearGradient>
+                      <linearGradient id="gradient-455" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="hsl(152 69% 55%)" stopOpacity={1}/>
+                        <stop offset="100%" stopColor="hsl(152 69% 35%)" stopOpacity={0.8}/>
                       </linearGradient>
                     </defs>
                   </BarChart>
