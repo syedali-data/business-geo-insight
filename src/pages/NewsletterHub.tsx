@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useProjects } from "@/store/projects";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sparkles, FileText, ArrowRight } from "lucide-react";
+import { FileText, ArrowRight } from "lucide-react";
+import AppShell from '@/components/layout/AppShell';
 
 export default function NewsletterHub() {
   const { projects } = useProjects();
@@ -15,28 +16,7 @@ export default function NewsletterHub() {
         <title>Newsletter Hub - LocalPulse</title>
       </Helmet>
 
-      <div className="min-h-screen bg-background">
-        {/* Header */}
-        <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-50">
-          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <Sparkles className="h-6 w-6 text-primary" />
-              <span className="font-heading text-xl font-bold">LocalPulse</span>
-            </Link>
-            <nav className="flex items-center gap-4">
-              <Link to="/dashboard">
-                <Button variant="ghost" size="sm">Dashboard</Button>
-              </Link>
-              <Link to="/projects">
-                <Button variant="ghost" size="sm">Projects</Button>
-              </Link>
-              <Link to="/settings">
-                <Button variant="ghost" size="sm">Settings</Button>
-              </Link>
-            </nav>
-          </div>
-        </header>
-
+      <AppShell>
         {/* Content */}
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-5xl mx-auto space-y-6">
@@ -99,7 +79,7 @@ export default function NewsletterHub() {
             )}
           </div>
         </div>
-      </div>
+      </AppShell>
     </>
   );
 }
