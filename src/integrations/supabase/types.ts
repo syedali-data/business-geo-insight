@@ -59,6 +59,126 @@ export type Database = {
         }
         Relationships: []
       }
+      research_runs: {
+        Row: {
+          actual_leads_found: number | null
+          category: string | null
+          completed_at: string | null
+          created_at: string | null
+          data_quality_score: number | null
+          error_message: string | null
+          id: string
+          location: string | null
+          max_leads: number
+          payment_method: string | null
+          price_paid: number | null
+          project_id: string | null
+          run_duration_seconds: number | null
+          started_at: string | null
+          status: string
+          tier: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          actual_leads_found?: number | null
+          category?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          data_quality_score?: number | null
+          error_message?: string | null
+          id?: string
+          location?: string | null
+          max_leads?: number
+          payment_method?: string | null
+          price_paid?: number | null
+          project_id?: string | null
+          run_duration_seconds?: number | null
+          started_at?: string | null
+          status?: string
+          tier?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          actual_leads_found?: number | null
+          category?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          data_quality_score?: number | null
+          error_message?: string | null
+          id?: string
+          location?: string | null
+          max_leads?: number
+          payment_method?: string | null
+          price_paid?: number | null
+          project_id?: string | null
+          run_duration_seconds?: number | null
+          started_at?: string | null
+          status?: string
+          tier?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscription_plans: {
+        Row: {
+          billing_period_end: string
+          billing_period_start: string
+          created_at: string | null
+          discount_on_extra_runs: number | null
+          id: string
+          monthly_price: number
+          plan_type: string
+          run_tier: string
+          runs_per_month: number
+          runs_remaining: number
+          status: string
+          stripe_customer_id: string | null
+          stripe_price_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          billing_period_end?: string
+          billing_period_start?: string
+          created_at?: string | null
+          discount_on_extra_runs?: number | null
+          id?: string
+          monthly_price?: number
+          plan_type: string
+          run_tier?: string
+          runs_per_month?: number
+          runs_remaining?: number
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_price_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          billing_period_end?: string
+          billing_period_start?: string
+          created_at?: string | null
+          discount_on_extra_runs?: number | null
+          id?: string
+          monthly_price?: number
+          plan_type?: string
+          run_tier?: string
+          runs_per_month?: number
+          runs_remaining?: number
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_price_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_credits: {
         Row: {
           auto_recharge_enabled: boolean | null
