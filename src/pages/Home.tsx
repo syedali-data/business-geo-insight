@@ -529,7 +529,7 @@ export default function Home() {
                 Simple, Transparent Pricing
               </h2>
               <p className="text-lg text-muted-foreground">
-                Start with 20 free credits. Upgrade anytime to unlock more power.
+                Pay per run or subscribe monthly. No hidden fees.
               </p>
             </motion.div>
 
