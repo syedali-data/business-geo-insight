@@ -22,7 +22,7 @@ const schema = z.object({
   professionCode: z.string().min(2, "Profession code required"),
   professionLabel: z.string().min(2, "Profession label required"),
   keywords: z.string().optional(),
-  maxLeads: z.coerce.number().min(100, "Minimum 100 leads").max(1000, "Maximum 1000 leads").default(100),
+  maxLeads: z.coerce.number().min(100, "Minimum 100 leads").max(500, "Maximum 500 leads").default(100),
   sheetId: z.string().optional(),
   leadsRange: z.string().optional(),
   insightsRange: z.string().optional(),
@@ -204,13 +204,13 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
                     value={[maxLeads]}
                     onValueChange={([value]) => update("maxLeads", value)}
                     min={100}
-                    max={1000}
+                    max={500}
                     step={50}
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground mt-1">
                     <span>100 (base)</span>
-                    <span>1000</span>
+                    <span>500</span>
                   </div>
                 </div>
                 
