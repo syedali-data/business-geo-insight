@@ -31,6 +31,7 @@ export const PRICING_TIERS = {
       'Sentiment analysis',
       'Competitive intelligence',
       'Market opportunities report',
+      'AI Newsletter generation included',
       'PDF + CSV export',
       'Results in 2-3 minutes'
     ],
