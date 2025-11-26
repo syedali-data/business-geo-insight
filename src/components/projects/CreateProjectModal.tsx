@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { z } from "zod";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -99,10 +99,12 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh]">
-        <DialogHeader><DialogTitle>New Market Research</DialogTitle></DialogHeader>
-        <ScrollArea className="max-h-[calc(90vh-120px)] pr-4">
-          <div className="space-y-6">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle>New Market Research</DialogTitle>
+        </DialogHeader>
+        <ScrollArea className="flex-1 pr-4 -mr-4">
+          <div className="space-y-6 pr-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
                 <Label htmlFor="title">Project Title</Label>
@@ -121,7 +123,7 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
               </div>
               <div><Label htmlFor="keywords">Keywords (optional)</Label><Input id="keywords" value={form.keywords || ""} onChange={(e) => update("keywords", e.target.value)} placeholder="residential, commercial" /></div>
             </div>
-            <div className="pt-4 border-t">
+            <div className="pt-4 border-t border-border">
               <h3 className="font-medium text-sm mb-4 flex items-center gap-2">
                 Research Configuration
               </h3>
@@ -135,10 +137,12 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
             <BillingSummary tier={tier} billingCheck={billingCheck} isLoading={billingLoading || subscriptionLoading} />
           </div>
         </ScrollArea>
-        <div className="flex justify-end gap-2 pt-4 border-t">
+        <DialogFooter className="pt-4 border-t border-border mt-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={create} disabled={pending || subscriptionLoading || billingLoading}>{pending ? "Creating..." : buttonText}</Button>
-        </div>
+          <Button onClick={create} disabled={pending || subscriptionLoading || billingLoading}>
+            {pending ? "Creating..." : buttonText}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
