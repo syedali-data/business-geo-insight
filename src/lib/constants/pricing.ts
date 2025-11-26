@@ -26,7 +26,7 @@ export const PRICING_TIERS = {
     features: [
       'Up to 500 businesses',
       'Full contact data + email validation',
-      'Complete reviews (up to 50 per business)',
+      'Complete reviews (up to 20 per business)',
       'AI-powered market analysis',
       'Sentiment analysis',
       'Competitive intelligence',
