@@ -592,29 +592,208 @@ export default function Home() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-20 md:py-32">
-          <div className="container mx-auto px-4">
+        {/* Ultra Premium CTA Section */}
+        <section className="py-20 md:py-32 relative overflow-hidden">
+          {/* Background glow effects */}
+          <div className="absolute inset-0 pointer-events-none">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              animate={{ 
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.5, 0.3]
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute top-1/2 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl -translate-y-1/2"
+            />
+            <motion.div
+              animate={{ 
+                scale: [1.2, 1, 1.2],
+                opacity: [0.3, 0.5, 0.3]
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+              className="absolute top-1/2 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl -translate-y-1/2"
+            />
+          </div>
+
+          <div className="container mx-auto px-4 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <Card variant="gradient" className="gradient-cyan-purple p-12 text-center shadow-glow max-w-4xl mx-auto border-primary/20">
-                <Sparkles className="h-16 w-16 text-white mx-auto mb-6" />
-                <h2 className="font-heading text-4xl md:text-5xl font-bold mb-4 text-white">
-                  Ready to Find Your Next Customer?
-                </h2>
-                <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
-                  Start with 20 free credits. No credit card required.
-                </p>
-                <Link to="/dashboard">
-                  <Button size="xl" variant="glass" className="group bg-white text-primary hover:bg-white/90">
-                    Get Started Free
-                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </Link>
-              </Card>
+              <div className="relative max-w-5xl mx-auto">
+                {/* Main Card */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="relative rounded-3xl overflow-hidden"
+                >
+                  {/* Animated gradient background */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500">
+                    <motion.div
+                      animate={{ 
+                        backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
+                      }}
+                      transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                      style={{ backgroundSize: "200% 100%" }}
+                    />
+                  </div>
+
+                  {/* Floating particles */}
+                  <div className="absolute inset-0 overflow-hidden">
+                    {[...Array(6)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        animate={{
+                          y: [100, -100],
+                          x: [0, Math.random() * 40 - 20],
+                          opacity: [0, 1, 0]
+                        }}
+                        transition={{
+                          duration: 3 + Math.random() * 2,
+                          repeat: Infinity,
+                          delay: i * 0.5,
+                          ease: "easeOut"
+                        }}
+                        className="absolute w-2 h-2 bg-white/30 rounded-full"
+                        style={{ left: `${15 + i * 15}%`, bottom: 0 }}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Glowing border effect */}
+                  <div className="absolute inset-0 rounded-3xl border border-white/20" />
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                    className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 opacity-20 blur-xl"
+                  />
+
+                  {/* Content */}
+                  <div className="relative p-12 md:p-16 text-center">
+                    {/* Animated sparkle icon */}
+                    <motion.div
+                      animate={{ 
+                        rotate: [0, 10, -10, 0],
+                        scale: [1, 1.1, 1]
+                      }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                      className="inline-block mb-8"
+                    >
+                      <div className="relative">
+                        <Sparkles className="h-16 w-16 text-white" />
+                        <motion.div
+                          animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                          className="absolute inset-0 flex items-center justify-center"
+                        >
+                          <Sparkles className="h-16 w-16 text-white/50" />
+                        </motion.div>
+                      </div>
+                    </motion.div>
+
+                    <motion.h2 
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.2 }}
+                      className="font-heading text-4xl md:text-6xl font-extrabold mb-6 text-white drop-shadow-lg"
+                    >
+                      Ready to Find Your Next
+                      <br />
+                      <motion.span
+                        animate={{ 
+                          textShadow: [
+                            "0 0 20px rgba(255,255,255,0.5)",
+                            "0 0 40px rgba(255,255,255,0.8)",
+                            "0 0 20px rgba(255,255,255,0.5)"
+                          ]
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        Customer?
+                      </motion.span>
+                    </motion.h2>
+
+                    <motion.p 
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.3 }}
+                      className="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl mx-auto font-medium"
+                    >
+                      Start with 20 free credits. No credit card required.
+                    </motion.p>
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      <Link to="/dashboard">
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <Button 
+                            size="xl" 
+                            className="group bg-slate-900/90 hover:bg-slate-900 text-white px-10 py-7 text-lg font-semibold rounded-xl shadow-2xl shadow-black/30 backdrop-blur-sm border border-white/10"
+                          >
+                            Get Started Free
+                            <motion.span
+                              animate={{ x: [0, 5, 0] }}
+                              transition={{ duration: 1.5, repeat: Infinity }}
+                            >
+                              <ArrowRight className="ml-3 h-5 w-5" />
+                            </motion.span>
+                          </Button>
+                        </motion.div>
+                      </Link>
+                    </motion.div>
+
+                    {/* Trust indicators */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.6 }}
+                      className="mt-10 flex flex-wrap items-center justify-center gap-6 text-white/70"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Check className="h-4 w-4" />
+                        <span className="text-sm">No credit card</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="h-4 w-4" />
+                        <span className="text-sm">Instant setup</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Check className="h-4 w-4" />
+                        <span className="text-sm">Cancel anytime</span>
+                      </div>
+                    </motion.div>
+                  </div>
+                </motion.div>
+
+                {/* Decorative floating elements */}
+                <motion.div
+                  animate={{ y: [-10, 10, -10], rotate: [0, 5, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute -top-6 -left-6 w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-2xl shadow-lg opacity-80 hidden md:block"
+                />
+                <motion.div
+                  animate={{ y: [10, -10, 10], rotate: [0, -5, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                  className="absolute -bottom-6 -right-6 w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full shadow-lg opacity-80 hidden md:block"
+                />
+                <motion.div
+                  animate={{ y: [-5, 15, -5], rotate: [0, 10, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                  className="absolute top-1/2 -right-10 w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg shadow-lg opacity-70 hidden lg:block"
+                />
+              </div>
             </motion.div>
           </div>
         </section>
