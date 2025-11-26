@@ -99,12 +99,12 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+      <DialogContent className="sm:max-w-2xl h-[95vh] max-h-[900px] flex flex-col overflow-hidden">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>New Market Research</DialogTitle>
         </DialogHeader>
-        <ScrollArea className="flex-1 min-h-0 max-h-[calc(90vh-180px)]">
-          <div className="space-y-6 pr-4 pb-2">
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="space-y-6 pr-4 pb-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
                 <Label htmlFor="title">Project Title</Label>
