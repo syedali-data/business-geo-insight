@@ -99,12 +99,12 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>New Market Research</DialogTitle>
         </DialogHeader>
-        <ScrollArea className="flex-1 pr-4 -mr-4">
-          <div className="space-y-6 pr-4">
+        <ScrollArea className="flex-1 min-h-0 max-h-[calc(90vh-180px)]">
+          <div className="space-y-6 pr-4 pb-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
                 <Label htmlFor="title">Project Title</Label>
@@ -131,13 +131,13 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
                 tier="premium" 
                 selected={true} 
                 onSelect={() => {}} 
-                className="max-w-md mx-auto"
+                className="max-w-lg mx-auto"
               />
             </div>
             <BillingSummary tier={tier} billingCheck={billingCheck} isLoading={billingLoading || subscriptionLoading} />
           </div>
         </ScrollArea>
-        <DialogFooter className="pt-4 border-t border-border mt-4">
+        <DialogFooter className="flex-shrink-0 pt-4 border-t border-border">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button onClick={create} disabled={pending || subscriptionLoading || billingLoading}>
             {pending ? "Creating..." : buttonText}
