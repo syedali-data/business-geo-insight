@@ -122,11 +122,15 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
               <div><Label htmlFor="keywords">Keywords (optional)</Label><Input id="keywords" value={form.keywords || ""} onChange={(e) => update("keywords", e.target.value)} placeholder="residential, commercial" /></div>
             </div>
             <div className="pt-4 border-t">
-              <h3 className="font-medium text-sm mb-4">Choose Your Research Depth</h3>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <TierSelectionCard tier="basic" selected={tier === 'basic'} onSelect={setTier} />
-                <TierSelectionCard tier="premium" selected={tier === 'premium'} onSelect={setTier} />
-              </div>
+              <h3 className="font-medium text-sm mb-4 flex items-center gap-2">
+                Research Configuration
+              </h3>
+              <TierSelectionCard 
+                tier="premium" 
+                selected={true} 
+                onSelect={() => {}} 
+                className="max-w-md mx-auto"
+              />
             </div>
             <BillingSummary tier={tier} billingCheck={billingCheck} isLoading={billingLoading || subscriptionLoading} />
             <div className="pt-4 border-t">
