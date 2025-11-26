@@ -133,14 +133,6 @@ export default function CreateProjectModal({ open, onOpenChange }: CreateProject
               />
             </div>
             <BillingSummary tier={tier} billingCheck={billingCheck} isLoading={billingLoading || subscriptionLoading} />
-            <div className="pt-4 border-t">
-              <h3 className="font-medium text-sm mb-3">Google Sheets (optional)</h3>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="sm:col-span-2"><Label htmlFor="sheetId">Sheet ID</Label><Input id="sheetId" value={form.sheetId || ""} onChange={(e) => update("sheetId", e.target.value)} placeholder="1ABcDEF..." /></div>
-                <div><Label htmlFor="leadsRange">Leads Range</Label><Input id="leadsRange" value={form.leadsRange || "Leads!A1:Z"} onChange={(e) => update("leadsRange", e.target.value)} /></div>
-                <div><Label htmlFor="insightsRange">Insights Range</Label><Input id="insightsRange" value={form.insightsRange || "Insights!A1:Z"} onChange={(e) => update("insightsRange", e.target.value)} /></div>
-              </div>
-            </div>
           </div>
         </ScrollArea>
         <div className="flex justify-end gap-2 pt-4 border-t">
