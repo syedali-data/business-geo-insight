@@ -1,131 +1,58 @@
-# Welcome to your Lovable project
+# LocalPulse
 
-## Project info
+Local market research for small businesses. Pick a business category and a city, and LocalPulse collects Google Maps data on local competitors, analyses it with AI, and turns it into an insights report and a ready-to-send newsletter.
 
-**URL**: https://lovable.dev/projects/4ecaee90-bcc3-4827-97c8-a81666101433
+> **Status:** Working prototype built October–November 2025. Not currently hosted. See [Run locally](#run-locally).
 
-## How can I edit this code?
+## What it does
 
-There are several ways of editing your application.
+- **Research projects:** set a category (e.g. roofing, HVAC, dentists), a city and a search radius, then start a research run.
+- **Results and AI insights:** see the businesses found, their ratings and reviews, and AI-written takeaways for each project.
+- **Newsletter builder:** arrange content blocks on a canvas, generate the copy with AI, and export to PDF.
+- **Shareable reports:** every report gets a public link (`/r/:id`).
+- **Credits and plans:** each run shows its credit cost up front, usage is tracked, and there are subscription tiers.
 
-**Use Lovable**
+## How it works
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/4ecaee90-bcc3-4827-97c8-a81666101433) and start prompting.
+```
+React app ──► Supabase Edge Functions ──► n8n workflows
+               runMarketResearch           Google Maps data (Apify)
+               runNewsletter               ─► Google Sheets ─► AI insights
+                    │
+                    ▼
+   generateNewsletterContent (AI)  ·  generateNewsletterPDF (PDFShift)
+                    │
+                    ▼
+       Supabase database: research runs, credits, plans
+```
 
-Changes made via Lovable will be committed automatically to this repo.
+## Tech stack
 
-**Use your preferred IDE**
+| Layer | Tools |
+|---|---|
+| Front end | React, TypeScript, Vite, Tailwind CSS, shadcn/ui |
+| Back end | Supabase (PostgreSQL, Auth, Edge Functions) |
+| Automation | n8n, Apify Google Maps scraper, Google Sheets |
+| AI and docs | LLM content generation, PDFShift for PDF export |
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Project structure
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+```
+src/pages/            Home, dashboard, projects, newsletter builder, pricing, public report
+src/components/       Dashboard widgets, project tabs, newsletter canvas, billing
+supabase/functions/   runMarketResearch, runNewsletter, generateNewsletterContent, generateNewsletterPDF
+supabase/migrations/  Database schema: research runs, user credits, credit usage, plans
+```
 
-Follow these steps:
+## Run locally
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The app reads its Supabase settings from `.env`. The edge functions need `N8N_LEADGEN_WEBHOOK_URL`, `N8N_NEWSLETTER_WEBHOOK_URL` and `N8N_API_KEY` pointing at your n8n workflows.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## How it was built
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/4ecaee90-bcc3-4827-97c8-a81666101433) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
-
-## API Testing
-
-This app uses Lovable Cloud Functions to proxy requests to n8n webhooks. To test the endpoints:
-
-### Test Market Research Endpoint
-
-```bash
-curl -X POST https://<your-project-id>.supabase.co/functions/v1/runMarketResearch \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <your-anon-key>" \
-  -d '{
-    "projectId": "demo",
-    "country": "CA",
-    "region": "ON",
-    "city": "London",
-    "radius_km": 25,
-    "profession_code": "roofing",
-    "profession_label": "Roofing",
-    "keywords": ["residential", "commercial"],
-    "max_leads": 200,
-    "enrich": true,
-    "validate_emails": true
-  }'
-```
-
-### Test Newsletter Endpoint
-
-```bash
-curl -X POST https://<your-project-id>.supabase.co/functions/v1/runNewsletter \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <your-anon-key>" \
-  -d '{
-    "projectId": "demo",
-    "templateId": "default",
-    "tone": "professional",
-    "length": "standard",
-    "sendNow": false
-  }'
-```
-
-**Required Environment Variables:**
-
-Make sure these secrets are configured in your Supabase project:
-
-- `INTERNAL_N8N_API_KEY` - Your internal API key for n8n webhook authentication
-- `N8N_LEADGEN_WEBHOOK_URL` - Your n8n leadgen webhook URL (e.g., `https://your-n8n.com/webhook/lovable/leadgen`)
-- `N8N_NEWSLETTER_WEBHOOK_URL` - Your n8n newsletter webhook URL (e.g., `https://your-n8n.com/webhook/lovable/newsletter`)
-
-Expected responses will include `{ status, runId }` from n8n or appropriate error messages if environment variables are missing.
-
-## SPA Fallback for Production Deployments
-
-When deploying to external hosting platforms, ensure SPA fallback is configured:
-
-- **Netlify**: Add to `_redirects`: `/* /index.html 200`
-- **Vercel**: Add to `vercel.json`: `{ "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }`
-- **Other hosts**: Configure all routes to serve `index.html`
+I built the app with Lovable (an AI app builder) and connected it to my n8n research workflows. Those workflows are adapted from the open-source [local_market_research_n8n](https://github.com/the-vibe-marketers/local_market_research_n8n) template.
